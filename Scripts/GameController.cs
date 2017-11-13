@@ -5,7 +5,7 @@ using UnityEngine.UI;
 
 public class GameController : MonoBehaviour {
 
-    public Text[,] buttonList;
+    public Text[] buttonList;a
 
     private void Awake()
     {
@@ -18,7 +18,7 @@ public class GameController : MonoBehaviour {
         {
             for (int j = 0; j < buttonList.GetLength(1); j++)
             {
-                buttonList[i,j].GetComponentInParent<GridSpace>().SetGameControllerReference(this);
+                buttonList[i].GetComponentInParent<GridSpace>().SetGameControllerReference(this);
             }
         }
     }
