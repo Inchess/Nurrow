@@ -30,7 +30,7 @@ public class GameController : MonoBehaviour {
         buttonArray[2, 2] = buttonList[2];
         buttonArray[1, 0] = buttonList[3];
         buttonArray[1, 1] = buttonList[4];a
-        buttonArray[1, 2] = buttonList[5];
+        buttonArray[1, 2] = buttonList[5];b
         buttonArray[0, 0] = buttonList[6];
         buttonArray[0, 1] = buttonList[7];
         buttonArray[0, 2] = buttonList[8];
