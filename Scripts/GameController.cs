@@ -5,7 +5,8 @@ using UnityEngine.UI;
 
 public class GameController : MonoBehaviour {
 
-    public Text[] buttonList;a
+    public Text[] buttonList;
+    public Text[,] buttonArray = new Text[3, 3];
 
     private void Awake()
     {
