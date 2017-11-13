@@ -6,10 +6,27 @@ using UnityEngine.UI;
 public class GameController : MonoBehaviour {
 
     public Text[] buttonList;
-    public Text[,] buttonArray = new Text[3, 3];
+    private int rows = 3;
+    private int columns = 3;
+    private Text[,] buttonArray;
+    private List<string> numbers;
+    private List<string> numbersLeft;
+    private System.Random rand;
+
+    //          BOARD
+    //  \y  0   1   2
+    //  x    _________
+    //  2   |7   8   9|
+    //  1   |6   5   4|
+    //  0   |1   2   3|
+    //      |_________|
 
     private void Awake()
     {
+        buttonArray = new Text[rows, columns];
+        rand = new System.Random();
+        numbers = new List<string>(new string[] { "1", "2", "3", "4", "5", "6", "7", "8", "9" });
+        numbersLeft = numbers;
         SetGameControllerReferenceOnButtons();
         Change1DTo2DArray();
         AddText();
@@ -38,15 +55,15 @@ public class GameController : MonoBehaviour {
 
     void AddText()
     {
-        buttonArray[2, 0].text = "7";
-        buttonArray[2, 1].text = "8";
-        buttonArray[2, 2].text = "9";
-        buttonArray[1, 0].text = "6";
-        buttonArray[1, 1].text = "5";
-        buttonArray[1, 2].text = "4";
-        buttonArray[0, 0].text = "1";
-        buttonArray[0, 1].text = "2";
-        buttonArray[0, 2].text = "3";
+        for (int i = 0; i < rows; i++)
+        {
+            for (int j = 0; j < columns; j++)
+            {
+                int randomNumber = rand.Next(0, numbersLeft.Count);
+                buttonArray[i, j].text = numbersLeft[randomNumber];
+                numbersLeft.RemoveAt(randomNumber);
+            }
+        }
     }
 
     public void EndTurn()
