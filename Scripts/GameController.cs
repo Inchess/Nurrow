@@ -9,8 +9,8 @@ public class GameController : MonoBehaviour {
     private int rows = 3;
     private int columns = 3;
     private Text[,] buttonArray;
-    private List<string> numbers;
-    private List<string> numbersLeft;
+    private List<int> numbers;
+    private List<int> numbersLeft;
     private System.Random rand;
 
     //          BOARD
@@ -25,7 +25,7 @@ public class GameController : MonoBehaviour {
     {
         buttonArray = new Text[rows, columns];
         rand = new System.Random();
-        numbers = new List<string>(new string[] { "1", "2", "3", "4", "5", "6", "7", "8", "9" });
+        numbers = new List<int>(new int[] {1, 2, 3, 4, 5, 6, 7, 8, 9});
         numbersLeft = numbers;
         SetGameControllerReferenceOnButtons();
         Change1DTo2DArray();
@@ -58,9 +58,13 @@ public class GameController : MonoBehaviour {
         for (int i = 0; i < rows; i++)
         {
             for (int j = 0; j < columns; j++)
-            {
-                int randomNumber = rand.Next(0, numbersLeft.Count);
-                buttonArray[i, j].text = numbersLeft[randomNumber];
+            { 
+                int randomNumber = 0;
+                do
+                {
+                    randomNumber = rand.Next(0, numbersLeft.Count);
+                } while (i == 0 && randomNumber < rows);
+                buttonArray[i, j].text = numbersLeft[randomNumber].ToString();
                 numbersLeft.RemoveAt(randomNumber);
             }
         }
