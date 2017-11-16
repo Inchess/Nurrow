@@ -64,10 +64,10 @@ public class GameController : MonoBehaviour {
         buttonArray = new Text[rows, columns];
         numbers = new List<int>(new int[] { 1, 2, 3, 4, 5, 6, 7, 8, 9 });
         numbersLeft = numbers;
-        CreateArrowList(arrowsList);
-        CreateArrowList(arrowsListCopy);
-        //arrowsList = new List<Sprite>(new Sprite[] { upArrow, upLeftArrow, upRightArrow, leftArrow, rightArrow, downArrow, downLeftArrow, downRightArrow });
-        //arrowsListCopy = arrowsList;
+        arrowsList = new List<Sprite>(new Sprite[] { upArrow, upLeftArrow, upRightArrow, leftArrow, rightArrow, downArrow, downLeftArrow, downRightArrow });
+        arrowsListCopy = new List<Sprite>(new Sprite[] { upArrow, upLeftArrow, upRightArrow, leftArrow, rightArrow, downArrow, downLeftArrow, downRightArrow });
+        //CreateArrowList(arrowsList);
+        // CreateArrowList(arrowsListCopy);
         arrowsToUse = new List<Sprite>();
     }
 
@@ -119,6 +119,12 @@ public class GameController : MonoBehaviour {
         {
             arrowsToUse.AddRange(arrowsList);
         }
+        for (int i = 0; i < extraArrows; i++)
+        {
+            int randomNumber = rand.Next(0, arrowsListCopy.Count);
+            arrowsToUse.Add(arrowsListCopy[randomNumber]);
+            arrowsListCopy.RemoveAt(randomNumber);
+        }
     }
 
     void AddNumbersToButtons()
@@ -142,10 +148,11 @@ public class GameController : MonoBehaviour {
     {
         for (int i = 0; i < imageList.Length; i++)
         {
-            int index = rand.Next(0, arrowsList.Count);
-            imageList[i].sprite = arrowsList[index];
+            int index = rand.Next(0, arrowsToUse.Count);
+            imageList[i].sprite = arrowsToUse[index];
             imageList[i].rectTransform.sizeDelta = new Vector2(40, 40);
-            SetArrowLocation(arrowsList[index], imageList[i]);
+            SetArrowLocation(arrowsToUse[index], imageList[i]);
+            arrowsToUse.RemoveAt(index);
         }
     }
 
