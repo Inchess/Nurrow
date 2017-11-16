@@ -7,17 +7,21 @@ public class GameController : MonoBehaviour {
 
     public Text[] buttonList;
     public Image[] imageList;
+    public Sprite upArrow;
+    public Sprite upLeftArrow;
+    public Sprite upRightArrow;
+    public Sprite rightArrow;
+    public Sprite leftArrow;
+    public Sprite downArrow;
+    public Sprite downRightArrow;
+    public Sprite downLeftArrow;
     private int rows = 3;
     private int columns = 3;
     private Text[,] buttonArray;
     private List<int> numbers;
     private List<int> numbersLeft;
     private System.Random rand;
-    private List<Image> arrowsList;
-
-    public Image a;
-
-    private Arrows arrows;
+    private List<Sprite> arrowsList;
 
 
     //          BOARD
@@ -30,12 +34,17 @@ public class GameController : MonoBehaviour {
 
     private void Awake()
     {
-        InstantiateVariables();
         InstantiateObjects();
+        InstantiateVariables();
         SetGameControllerReferenceOnButtons();
         Change1DTo2DArray();
         AddText();
         AddArrows();
+    }
+
+    private void InstantiateObjects()
+    {
+        rand = new System.Random();
     }
 
     private void InstantiateVariables()
@@ -43,12 +52,7 @@ public class GameController : MonoBehaviour {
         buttonArray = new Text[rows, columns];
         numbers = new List<int>(new int[] { 1, 2, 3, 4, 5, 6, 7, 8, 9 });
         numbersLeft = numbers;
-    }
-
-    private void InstantiateObjects()
-    {
-        rand = new System.Random();
-        arrowsList = arrows.GetArrowsList();
+        arrowsList = new List<Sprite>(new Sprite[] { upArrow, upLeftArrow, upRightArrow, leftArrow, rightArrow, downArrow, downLeftArrow, downRightArrow });
     }
 
     void SetGameControllerReferenceOnButtons()
@@ -92,7 +96,9 @@ public class GameController : MonoBehaviour {
 
     void AddArrows()
     {
-        imageList[0].sprite = arrowsList[0];
+        imageList[0].sprite = arrowsList[3];
+        imageList[0].rectTransform.anchoredPosition = new Vector2(50, 50);
+        imageList[0].rectTransform.sizeDelta = new Vector2(30, 30);
     }
 
     public void EndTurn()

@@ -5,25 +5,16 @@ using UnityEngine.UI;
 
 public class Arrows : MonoBehaviour {
 
-    public Sprite upArrow;
-    public Image upLeftArrow;
-    public Image upRightArrow;
-    public Image leftArrow;
-    public Image rightArrow;
-    public Image downArrow;
-    public Image downLeftArrow;
-    public Image downRightArrow;
-
-    private List<Image> arrowsList;
+    private List<Sprite> arrowsList;
+    private GameController gameController;
 
     private void Awake()
     {
-        arrowsList = new List<Image>(new Image[] { upArrow, upLeftArrow, upRightArrow, leftArrow, rightArrow, downArrow, downLeftArrow, downRightArrow });
     }
 
-    public List<Image> GetArrowsList()
+    public void SetGameControllerReference(GameController controller)
     {
-        return arrowsList;
+        gameController = controller;
     }
 
 }

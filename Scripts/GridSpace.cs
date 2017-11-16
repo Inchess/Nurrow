@@ -9,11 +9,6 @@ public class GridSpace : MonoBehaviour {
 
     private GameController gameController;
 
-    public void SetSpace()
-    {
-        
-    }
-
     public void SetGameControllerReference(GameController controller)
     {
         gameController = controller;
