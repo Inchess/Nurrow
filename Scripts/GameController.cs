@@ -66,14 +66,7 @@ public class GameController : MonoBehaviour {
         numbersLeft = numbers;
         arrowsList = new List<Sprite>(new Sprite[] { upArrow, upLeftArrow, upRightArrow, leftArrow, rightArrow, downArrow, downLeftArrow, downRightArrow });
         arrowsListCopy = new List<Sprite>(new Sprite[] { upArrow, upLeftArrow, upRightArrow, leftArrow, rightArrow, downArrow, downLeftArrow, downRightArrow });
-        //CreateArrowList(arrowsList);
-        // CreateArrowList(arrowsListCopy);
         arrowsToUse = new List<Sprite>();
-    }
-
-    private void CreateArrowList(List<Sprite> arrowList)
-    {
-        arrowsList = new List<Sprite>(new Sprite[] { upArrow, upLeftArrow, upRightArrow, leftArrow, rightArrow, downArrow, downLeftArrow, downRightArrow });
     }
 
     private void SetArrowsNames()
@@ -159,36 +152,52 @@ public class GameController : MonoBehaviour {
     void SetArrowLocation(Sprite arrow, Image image)
     {
         string name = arrow.name;
+        int x = 0;
+        int y = 0;
         if (name == upArrowName)
         {
-            image.rectTransform.anchoredPosition = new Vector2(0, 45);
+            x = 0;
+            y = 45;
         } else if (name == upRightArrowName)
         {
-            image.rectTransform.anchoredPosition = new Vector2(45, 45);
+            x = 45;
+            y = 45;
         } else if (name == upLeftArrowName)
         {
-            image.rectTransform.anchoredPosition = new Vector2(-45, 45);
+            x = -45;
+            y = 45;
         } else if (name == rightArrowName)
         {
-            image.rectTransform.anchoredPosition = new Vector2(45, 0);
+            x = 45;
+            y = 0;
         } else if (name == leftArrowName)
         {
-            image.rectTransform.anchoredPosition = new Vector2(-45, 0);
+            x = -45;
+            y = 0;
         } else if (name == downArrowName)
         {
-            image.rectTransform.anchoredPosition = new Vector2(0, -45);
+            x = 0;
+            y = -45;
         } else if (name == downLeftArrowName)
         {
-            image.rectTransform.anchoredPosition = new Vector2(-45, -45);
+            x = -45;
+            y = -45;
         } else if (name == downRightArrowName)
         {
-            image.rectTransform.anchoredPosition = new Vector2(45, -45);
+            x = 45;
+            y = -45;
         }
+        SetPosition(image, x, y);
+    }
+
+    void SetPosition(Image image, int x, int y)
+    {
+        image.rectTransform.anchoredPosition = new Vector2(x, y);
     }
 
     public void MoveNumbersOnClick(Text buttonText)
     {
-        buttonText.text = "A";
+        Debug.Log(buttonText.text);
     }
 
 }
