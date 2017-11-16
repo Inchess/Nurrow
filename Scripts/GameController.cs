@@ -186,4 +186,9 @@ public class GameController : MonoBehaviour {
         }
     }
 
+    public void MoveNumbersOnClick(Text buttonText)
+    {
+        buttonText.text = "A";
+    }
+
 }
