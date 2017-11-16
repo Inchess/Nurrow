@@ -22,6 +22,16 @@ public class GameController : MonoBehaviour {
     private List<int> numbersLeft;
     private System.Random rand;
     private List<Sprite> arrowsList;
+    private List<Sprite> arrowsListCopy;
+    private List<Sprite> arrowsToUse;
+    string upArrowName = "Up Arrow";
+    string upRightArrowName = "Up Right Arrow";
+    string upLeftArrowName = "Up Left Arrow";
+    string rightArrowName = "Right Arrow";
+    string leftArrowName = "Left Arrow";
+    string downArrowName = "Down Arrow";
+    string downRightArrowName = "Down Right Arrow";
+    string downLeftArrowName = "Down Left Arrow";
 
 
     //          BOARD
@@ -36,10 +46,12 @@ public class GameController : MonoBehaviour {
     {
         InstantiateObjects();
         InstantiateVariables();
+        SetArrowsNames();
         SetGameControllerReferenceOnButtons();
         Change1DTo2DArray();
-        AddText();
-        AddArrows();
+        PrepareArrowsToUse();
+        AddNumbersToButtons();
+        AddArrowsToButtons();
     }
 
     private void InstantiateObjects()
@@ -52,7 +64,28 @@ public class GameController : MonoBehaviour {
         buttonArray = new Text[rows, columns];
         numbers = new List<int>(new int[] { 1, 2, 3, 4, 5, 6, 7, 8, 9 });
         numbersLeft = numbers;
+        CreateArrowList(arrowsList);
+        CreateArrowList(arrowsListCopy);
+        //arrowsList = new List<Sprite>(new Sprite[] { upArrow, upLeftArrow, upRightArrow, leftArrow, rightArrow, downArrow, downLeftArrow, downRightArrow });
+        //arrowsListCopy = arrowsList;
+        arrowsToUse = new List<Sprite>();
+    }
+
+    private void CreateArrowList(List<Sprite> arrowList)
+    {
         arrowsList = new List<Sprite>(new Sprite[] { upArrow, upLeftArrow, upRightArrow, leftArrow, rightArrow, downArrow, downLeftArrow, downRightArrow });
+    }
+
+    private void SetArrowsNames()
+    {
+        upArrow.name = upArrowName;
+        upRightArrow.name = upRightArrowName;
+        upLeftArrow.name = upLeftArrowName;
+        rightArrow.name = rightArrowName;
+        leftArrow.name = leftArrowName;
+        downArrow.name = downArrowName;
+        downLeftArrow.name = downLeftArrowName;
+        downRightArrow.name = downRightArrowName;
     }
 
     void SetGameControllerReferenceOnButtons()
@@ -77,7 +110,18 @@ public class GameController : MonoBehaviour {
         buttonArray[0, 2] = buttonList[8];
     }
 
-    void AddText()
+    void PrepareArrowsToUse()
+    {
+        int numOfButtons = rows * columns;
+        int numOfOccurrence = numOfButtons / arrowsList.Count;
+        int extraArrows = numOfButtons % arrowsList.Count;
+        for (int i = 0; i < numOfOccurrence; i++)
+        {
+            arrowsToUse.AddRange(arrowsList);
+        }
+    }
+
+    void AddNumbersToButtons()
     {
         for (int i = 0; i < rows; i++)
         {
@@ -94,16 +138,45 @@ public class GameController : MonoBehaviour {
         }
     }
 
-    void AddArrows()
+    void AddArrowsToButtons()
     {
-        imageList[0].sprite = arrowsList[3];
-        imageList[0].rectTransform.anchoredPosition = new Vector2(50, 50);
-        imageList[0].rectTransform.sizeDelta = new Vector2(30, 30);
+        for (int i = 0; i < imageList.Length; i++)
+        {
+            int index = rand.Next(0, arrowsList.Count);
+            imageList[i].sprite = arrowsList[index];
+            imageList[i].rectTransform.sizeDelta = new Vector2(40, 40);
+            SetArrowLocation(arrowsList[index], imageList[i]);
+        }
     }
 
-    public void EndTurn()
+    void SetArrowLocation(Sprite arrow, Image image)
     {
-        Debug.Log("ENnn");
+        string name = arrow.name;
+        if (name == upArrowName)
+        {
+            image.rectTransform.anchoredPosition = new Vector2(0, 45);
+        } else if (name == upRightArrowName)
+        {
+            image.rectTransform.anchoredPosition = new Vector2(45, 45);
+        } else if (name == upLeftArrowName)
+        {
+            image.rectTransform.anchoredPosition = new Vector2(-45, 45);
+        } else if (name == rightArrowName)
+        {
+            image.rectTransform.anchoredPosition = new Vector2(45, 0);
+        } else if (name == leftArrowName)
+        {
+            image.rectTransform.anchoredPosition = new Vector2(-45, 0);
+        } else if (name == downArrowName)
+        {
+            image.rectTransform.anchoredPosition = new Vector2(0, -45);
+        } else if (name == downLeftArrowName)
+        {
+            image.rectTransform.anchoredPosition = new Vector2(-45, -45);
+        } else if (name == downRightArrowName)
+        {
+            image.rectTransform.anchoredPosition = new Vector2(45, -45);
+        }
     }
 
 }
