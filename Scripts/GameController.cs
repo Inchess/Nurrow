@@ -6,15 +6,22 @@ using UnityEngine.UI;
 public class GameController : MonoBehaviour {
 
     public Text[] buttonList;
+    public Image[] imageList;
     private int rows = 3;
     private int columns = 3;
     private Text[,] buttonArray;
     private List<int> numbers;
     private List<int> numbersLeft;
     private System.Random rand;
+    private List<Image> arrowsList;
+
+    public Image a;
+
+    private Arrows arrows;
+
 
     //          BOARD
-    //  \y  0   1   2
+    //  \y   0   1   2
     //  x    _________
     //  2   |7   8   9|
     //  1   |6   5   4|
@@ -23,13 +30,25 @@ public class GameController : MonoBehaviour {
 
     private void Awake()
     {
-        buttonArray = new Text[rows, columns];
-        rand = new System.Random();
-        numbers = new List<int>(new int[] {1, 2, 3, 4, 5, 6, 7, 8, 9});
-        numbersLeft = numbers;
+        InstantiateVariables();
+        InstantiateObjects();
         SetGameControllerReferenceOnButtons();
         Change1DTo2DArray();
         AddText();
+        AddArrows();
+    }
+
+    private void InstantiateVariables()
+    {
+        buttonArray = new Text[rows, columns];
+        numbers = new List<int>(new int[] { 1, 2, 3, 4, 5, 6, 7, 8, 9 });
+        numbersLeft = numbers;
+    }
+
+    private void InstantiateObjects()
+    {
+        rand = new System.Random();
+        arrowsList = arrows.GetArrowsList();
     }
 
     void SetGameControllerReferenceOnButtons()
@@ -37,6 +56,7 @@ public class GameController : MonoBehaviour {
         for (int i = 0; i < buttonList.Length; i++)
         {
             buttonList[i].GetComponentInParent<GridSpace>().SetGameControllerReference(this);
+            imageList[i].GetComponentInParent<GridSpace>().SetGameControllerReference(this);
         }
     }
 
@@ -68,6 +88,11 @@ public class GameController : MonoBehaviour {
                 numbersLeft.RemoveAt(randomNumber);
             }
         }
+    }
+
+    void AddArrows()
+    {
+        imageList[0].sprite = arrowsList[0];
     }
 
     public void EndTurn()
