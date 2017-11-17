@@ -42,8 +42,8 @@ public class GameController : MonoBehaviour {
 
 
     //          BOARD
-    //  \y   0   1   2
-    //  x    _________
+    //  \x   0   1   2
+    //  y    _________
     //  2   |7   8   9|
     //  1   |6   5   4|
     //  0   |1   2   3|
@@ -100,24 +100,24 @@ public class GameController : MonoBehaviour {
 
     void Change1DTo2DArray()
     {
-        buttonArray[2, 0] = buttonList[0];
-        imageArray[2, 0] = imageList[0];
-        buttonArray[2, 1] = buttonList[1];
-        imageArray[2, 1] = imageList[1];
+        buttonArray[0, 2] = buttonList[0];
+        imageArray[0, 2] = imageList[0];
+        buttonArray[1, 2] = buttonList[1];
+        imageArray[1, 2] = imageList[1];
         buttonArray[2, 2] = buttonList[2];
         imageArray[2, 2] = imageList[2];
-        buttonArray[1, 0] = buttonList[3];
-        imageArray[1, 0] = imageList[3];
+        buttonArray[0, 1] = buttonList[3];
+        imageArray[0, 1] = imageList[3];
         buttonArray[1, 1] = buttonList[4];
         imageArray[1, 1] = imageList[4];
-        buttonArray[1, 2] = buttonList[5];
-        imageArray[1, 2] = imageList[5];
+        buttonArray[2, 1] = buttonList[5];
+        imageArray[2, 1] = imageList[5];
         buttonArray[0, 0] = buttonList[6];
         imageArray[0, 0] = imageList[6];
-        buttonArray[0, 1] = buttonList[7];
-        imageArray[0, 1] = imageList[7];
-        buttonArray[0, 2] = buttonList[8];
-        imageArray[0, 2] = imageList[8];
+        buttonArray[1, 0] = buttonList[7];
+        imageArray[1, 0] = imageList[7];
+        buttonArray[2, 0] = buttonList[8];
+        imageArray[2, 0] = imageList[8];
     }
 
     void PrepareArrowsToUse()
@@ -139,15 +139,15 @@ public class GameController : MonoBehaviour {
 
     void AddNumbersToButtons()
     {
-        for (int i = 0; i < rows; i++)
+        for (int j = 0; j < rows; j++)
         {
-            for (int j = 0; j < columns; j++)
+            for (int i = 0; i < columns; i++)
             { 
                 int randomNumber = 0;
                 do
                 {
                     randomNumber = rand.Next(0, numbersLeft.Count);
-                } while (i == 0 && randomNumber < rows);
+                } while (j == 0 && randomNumber < rows);
                 buttonArray[i, j].text = numbersLeft[randomNumber].ToString();
                 numbersLeft.RemoveAt(randomNumber);
             }
@@ -245,8 +245,6 @@ public class GameController : MonoBehaviour {
         int oldButtonY = clickedButtonY;
         buttonArray[newButtonX, newButtonY].text = clickedButtonNumber;
         buttonArray[clickedButtonX, clickedButtonY].text = newButtonNumber;
-        
-
     }
 
     void CalculateNewLocation()
@@ -255,8 +253,8 @@ public class GameController : MonoBehaviour {
         int yChange = 0;
         if (clickedButtonArrowName == upArrowName)
         {
-            xChange = 1;
-            yChange = 0;
+            xChange = 0;
+            yChange = 1;
         }
         else if (clickedButtonArrowName == upRightArrowName)
         {
@@ -265,23 +263,23 @@ public class GameController : MonoBehaviour {
         }
         else if (clickedButtonArrowName == upLeftArrowName)
         {
-            xChange = 1;
-            yChange = -1;
+            xChange = -1;
+            yChange = 1;
         }
         else if (clickedButtonArrowName == rightArrowName)
         {
-            xChange = 0;
-            yChange = 1;
+            xChange = 1;
+            yChange = 0;
         }
         else if (clickedButtonArrowName == leftArrowName)
         {
-            xChange = 0;
-            yChange = -1;
+            xChange = -1;
+            yChange = 0;
         }
         else if (clickedButtonArrowName == downArrowName)
         {
-            xChange = -1;
-            yChange = 0;
+            xChange = 0;
+            yChange = -1;
         }
         else if (clickedButtonArrowName == downLeftArrowName)
         {
@@ -290,8 +288,8 @@ public class GameController : MonoBehaviour {
         }
         else if (clickedButtonArrowName == downRightArrowName)
         {
-            xChange = -1;
-            yChange = 1;
+            xChange = 1;
+            yChange = -1;
         }
 
 
