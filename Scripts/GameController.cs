@@ -195,9 +195,24 @@ public class GameController : MonoBehaviour {
         image.rectTransform.anchoredPosition = new Vector2(x, y);
     }
 
-    public void MoveNumbersOnClick(Text buttonText)
+    public void MoveNumbersOnClick(Text buttonText, Button button)
     {
-        Debug.Log(buttonText.text);
+        string number = button.GetComponentInChildren<Text>().text;
+        FindButtonIndexes(number);
+    }
+
+    void FindButtonIndexes(string number)
+    {
+        for (int i = 0; i < rows; i++)
+        {
+            for (int j = 0; j < columns; j++)
+            {
+                if (buttonArray[i, j].text == number)
+                {
+                    Debug.Log("i: " + i + ", j: " + j);
+                }
+            }
+        }
     }
 
 }
