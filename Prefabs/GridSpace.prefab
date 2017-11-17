@@ -103,8 +103,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
-        m_MethodName: 
+      - m_Target: {fileID: 114551410853609068}
+        m_MethodName: UpdateGridSpace
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -182,6 +182,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   button: {fileID: 114143329232747226}
+  buttonText: {fileID: 0}
 --- !u!114 &114647038488797644
 MonoBehaviour:
   m_ObjectHideFlags: 1

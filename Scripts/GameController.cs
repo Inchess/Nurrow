@@ -39,6 +39,7 @@ public class GameController : MonoBehaviour {
     private int newButtonX;
     private int newButtonY;
     private string newButtonNumber;
+    private int numberOfMoves = 20;
 
 
     //          BOARD
@@ -71,7 +72,7 @@ public class GameController : MonoBehaviour {
         buttonArray = new Text[rows, columns];
         imageArray = new Image[rows, columns];
         numbers = new List<int>(new int[] { 1, 2, 3, 4, 5, 6, 7, 8, 9 });
-        numbersLeft = numbers;
+        numbersLeft = new List<int>(new int[] { 1, 2, 3, 4, 5, 6, 7, 8, 9 });
         arrowsList = new List<Sprite>(new Sprite[] { upArrow, upLeftArrow, upRightArrow, leftArrow, rightArrow, downArrow, downLeftArrow, downRightArrow });
         arrowsListCopy = new List<Sprite>(new Sprite[] { upArrow, upLeftArrow, upRightArrow, leftArrow, rightArrow, downArrow, downLeftArrow, downRightArrow });
         arrowsToUse = new List<Sprite>();
@@ -220,6 +221,7 @@ public class GameController : MonoBehaviour {
         FindButtonIndexes(number);
         ChangeButtonsPlaces(number);
         CheckIfGameFinished(button);
+        numberOfMoves--;
     }
 
     void FindButtonIndexes(string number)
@@ -299,16 +301,20 @@ public class GameController : MonoBehaviour {
 
     void CheckIfGameFinished(Button button)
     {
+        if (numberOfMoves <= 0)
+        {
+            LockButtons();
+        }
         if (buttonArray[0, 0].text == "1" && buttonArray[1, 0].text == "2" && buttonArray[2, 0].text == "3")
         {
-            ChangeColorToGreen(buttonArray[0, 0]);
-            ChangeColorToGreen(buttonArray[1, 0]);
-            ChangeColorToGreen(buttonArray[2, 0]);
-            Debug.Log("Game finished");
+            //ChangeColorToGreen(buttonArray[0, 0]);
+            //ChangeColorToGreen(buttonArray[1, 0]);
+            //ChangeColorToGreen(buttonArray[2, 0]);
+            RestartBoard();
         }
         else
         {
-            Debug.Log("Not yet");
+            Debug.Log("Moves left: " + numberOfMoves);
         }
     }
 
@@ -319,6 +325,34 @@ public class GameController : MonoBehaviour {
         cb.normalColor = Color.green;
         cb.highlightedColor = Color.green;
         b.colors = cb;
+    }
+
+    void RestartBoard()
+    {
+        ResetVariables();
+        PrepareArrowsToUse();
+        AddNumbersToButtons();
+        AddArrowsToButtons();
+        numberOfMoves += 5;
+        Debug.Log("Moves left: " + numberOfMoves);
+    }
+
+    void ResetVariables()
+    {
+        arrowsToUse.Clear();
+        arrowsListCopy.Clear();
+        arrowsListCopy = new List<Sprite>(new Sprite[] { upArrow, upLeftArrow, upRightArrow, leftArrow, rightArrow, downArrow, downLeftArrow, downRightArrow });
+        numbersLeft.Clear();
+        numbersLeft = new List<int> (new int[] { 1, 2, 3, 4, 5, 6, 7, 8, 9 });
+
+    }
+
+    void LockButtons()
+    {
+        for (int i = 0; i < buttonList.Length; i++)
+        {
+            buttonList[i].GetComponentInParent<Button>().interactable = false;
+        }
     }
 
 }
