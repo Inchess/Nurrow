@@ -5,7 +5,7 @@ using UnityEngine.UI;
 
 public class GameController : MonoBehaviour {
 
-    public Text[] buttonList;
+    public Text[] buttonTextList;
     public Image[] imageList;
     public Sprite upArrow;
     public Sprite upLeftArrow;
@@ -17,7 +17,7 @@ public class GameController : MonoBehaviour {
     public Sprite downLeftArrow;
     private int rows = 3;
     private int columns = 3;
-    private Text[,] buttonArray;
+    private Text[,] buttonTextArray;
     private Image[,] imageArray;
     private List<int> numbers;
     private List<int> numbersLeft;
@@ -36,8 +36,8 @@ public class GameController : MonoBehaviour {
     private int clickedButtonX;
     private int clickedButtonY;
     private string clickedButtonArrowName;
-    private int newButtonX;
-    private int newButtonY;
+    private int newPositionX;
+    private int newPositionY;
     private string newButtonNumber;
     private int numberOfMoves = 20;
 
@@ -69,7 +69,7 @@ public class GameController : MonoBehaviour {
 
     private void InstantiateVariables()
     {
-        buttonArray = new Text[rows, columns];
+        buttonTextArray = new Text[rows, columns];
         imageArray = new Image[rows, columns];
         numbers = new List<int>(new int[] { 1, 2, 3, 4, 5, 6, 7, 8, 9 });
         numbersLeft = new List<int>(new int[] { 1, 2, 3, 4, 5, 6, 7, 8, 9 });
@@ -92,41 +92,38 @@ public class GameController : MonoBehaviour {
 
     void SetGameControllerReferenceOnButtons()
     {
-        for (int i = 0; i < buttonList.Length; i++)
+        for (int i = 0; i < buttonTextList.Length; i++)
         {
-            buttonList[i].GetComponentInParent<GridSpace>().SetGameControllerReference(this);
+            buttonTextList[i].GetComponentInParent<GridSpace>().SetGameControllerReference(this);
             imageList[i].GetComponentInParent<GridSpace>().SetGameControllerReference(this);
         }
     }
 
     void Change1DTo2DArray()
     {
-        buttonArray[0, 2] = buttonList[0];
-        imageArray[0, 2] = imageList[0];
-        buttonArray[1, 2] = buttonList[1];
-        imageArray[1, 2] = imageList[1];
-        buttonArray[2, 2] = buttonList[2];
-        imageArray[2, 2] = imageList[2];
-        buttonArray[0, 1] = buttonList[3];
-        imageArray[0, 1] = imageList[3];
-        buttonArray[1, 1] = buttonList[4];
-        imageArray[1, 1] = imageList[4];
-        buttonArray[2, 1] = buttonList[5];
-        imageArray[2, 1] = imageList[5];
-        buttonArray[0, 0] = buttonList[6];
-        imageArray[0, 0] = imageList[6];
-        buttonArray[1, 0] = buttonList[7];
-        imageArray[1, 0] = imageList[7];
-        buttonArray[2, 0] = buttonList[8];
-        imageArray[2, 0] = imageList[8];
+        Match1DElementTo2D(0, 0, 2);
+        Match1DElementTo2D(1, 1, 2);
+        Match1DElementTo2D(2, 2, 2);
+        Match1DElementTo2D(3, 0, 1);
+        Match1DElementTo2D(4, 1, 1);
+        Match1DElementTo2D(5, 2, 1);
+        Match1DElementTo2D(6, 0, 0);
+        Match1DElementTo2D(7, 1, 0);
+        Match1DElementTo2D(8, 2, 0);
+    }
+
+    void Match1DElementTo2D(int index, int x2D, int y2D)
+    {
+        buttonTextArray[x2D, y2D] = buttonTextList[index];
+        imageArray[x2D, y2D] = imageList[index];
     }
 
     void PrepareArrowsToUse()
     {
         int numOfButtons = rows * columns;
-        int numOfOccurrence = numOfButtons / arrowsList.Count;
+        int allArrowsOccurrence = numOfButtons / arrowsList.Count;
         int extraArrows = numOfButtons % arrowsList.Count;
-        for (int i = 0; i < numOfOccurrence; i++)
+        for (int i = 0; i < allArrowsOccurrence; i++)
         {
             arrowsToUse.AddRange(arrowsList);
         }
@@ -149,7 +146,7 @@ public class GameController : MonoBehaviour {
                 {
                     randomNumber = rand.Next(0, numbersLeft.Count);
                 } while (j == 0 && randomNumber < rows);
-                buttonArray[i, j].text = numbersLeft[randomNumber].ToString();
+                buttonTextArray[i, j].text = numbersLeft[randomNumber].ToString();
                 numbersLeft.RemoveAt(randomNumber);
             }
         }
@@ -172,47 +169,9 @@ public class GameController : MonoBehaviour {
 
     void SetArrowLocation(Sprite arrow, Image image)
     {
-        int x = 0;
-        int y = 0;
-        if (arrow.name == upArrowName)
-        {
-            x = 0;
-            y = 45;
-        } else if (arrow.name == upRightArrowName)
-        {
-            x = 45;
-            y = 45;
-        } else if (arrow.name == upLeftArrowName)
-        {
-            x = -45;
-            y = 45;
-        } else if (arrow.name == rightArrowName)
-        {
-            x = 45;
-            y = 0;
-        } else if (arrow.name == leftArrowName)
-        {
-            x = -45;
-            y = 0;
-        } else if (arrow.name == downArrowName)
-        {
-            x = 0;
-            y = -45;
-        } else if (arrow.name == downLeftArrowName)
-        {
-            x = -45;
-            y = -45;
-        } else if (arrow.name == downRightArrowName)
-        {
-            x = 45;
-            y = -45;
-        }
-        SetPosition(image, x, y);
-    }
-
-    void SetPosition(Image image, int x, int y)
-    {
-        image.rectTransform.anchoredPosition = new Vector2(x, y);
+        int moveValue = 45;
+        int[] arrowTransition = ChangeLocation(arrow.name, moveValue);
+        image.rectTransform.anchoredPosition = new Vector2(arrowTransition[0], arrowTransition[1]);
     }
 
     public void MoveNumbersOnClick(Text buttonText, Button button)
@@ -230,7 +189,7 @@ public class GameController : MonoBehaviour {
         {
             for (int j = 0; j < columns; j++)
             {
-                if (buttonArray[i, j].text == number)
+                if (buttonTextArray[i, j].text == number)
                 {
                     clickedButtonArrowName = imageArray[i, j].sprite.name;
                     clickedButtonX = i;
@@ -243,60 +202,17 @@ public class GameController : MonoBehaviour {
     void ChangeButtonsPlaces(string clickedButtonNumber)
     {
         CalculateNewLocation();
-        string oldButtonNumber = clickedButtonNumber;
-        int oldButtonX = clickedButtonX;
-        int oldButtonY = clickedButtonY;
-        buttonArray[newButtonX, newButtonY].text = clickedButtonNumber;
-        buttonArray[clickedButtonX, clickedButtonY].text = newButtonNumber;
+        buttonTextArray[newPositionX, newPositionY].text = clickedButtonNumber;
+        buttonTextArray[clickedButtonX, clickedButtonY].text = newButtonNumber;
     }
 
     void CalculateNewLocation()
     {
-        int xChange = 0;
-        int yChange = 0;
-        if (clickedButtonArrowName == upArrowName)
-        {
-            xChange = 0;
-            yChange = 1;
-        }
-        else if (clickedButtonArrowName == upRightArrowName)
-        {
-            xChange = 1;
-            yChange = 1;
-        }
-        else if (clickedButtonArrowName == upLeftArrowName)
-        {
-            xChange = -1;
-            yChange = 1;
-        }
-        else if (clickedButtonArrowName == rightArrowName)
-        {
-            xChange = 1;
-            yChange = 0;
-        }
-        else if (clickedButtonArrowName == leftArrowName)
-        {
-            xChange = -1;
-            yChange = 0;
-        }
-        else if (clickedButtonArrowName == downArrowName)
-        {
-            xChange = 0;
-            yChange = -1;
-        }
-        else if (clickedButtonArrowName == downLeftArrowName)
-        {
-            xChange = -1;
-            yChange = -1;
-        }
-        else if (clickedButtonArrowName == downRightArrowName)
-        {
-            xChange = 1;
-            yChange = -1;
-        }
-        newButtonX = (clickedButtonX + xChange + rows) % rows;
-        newButtonY = (clickedButtonY + yChange + rows) % rows;
-        newButtonNumber = buttonArray[newButtonX, newButtonY].text;
+        int moveValue = 1;
+        int[] arrowTransition = ChangeLocation(clickedButtonArrowName, moveValue);
+        newPositionX = (clickedButtonX + arrowTransition[0] + rows) % rows;
+        newPositionY = (clickedButtonY + arrowTransition[1] + rows) % rows;
+        newButtonNumber = buttonTextArray[newPositionX, newPositionY].text;
     }
 
     void CheckIfGameFinished(Button button)
@@ -305,7 +221,7 @@ public class GameController : MonoBehaviour {
         {
             LockButtons();
         }
-        if (buttonArray[0, 0].text == "1" && buttonArray[1, 0].text == "2" && buttonArray[2, 0].text == "3")
+        if (buttonTextArray[0, 0].text == "1" && buttonTextArray[1, 0].text == "2" && buttonTextArray[2, 0].text == "3")
         {
             //ChangeColorToGreen(buttonArray[0, 0]);
             //ChangeColorToGreen(buttonArray[1, 0]);
@@ -334,7 +250,6 @@ public class GameController : MonoBehaviour {
         AddNumbersToButtons();
         AddArrowsToButtons();
         numberOfMoves += 5;
-        Debug.Log("Moves left: " + numberOfMoves);
     }
 
     void ResetVariables()
@@ -349,10 +264,52 @@ public class GameController : MonoBehaviour {
 
     void LockButtons()
     {
-        for (int i = 0; i < buttonList.Length; i++)
+        for (int i = 0; i < buttonTextList.Length; i++)
         {
-            buttonList[i].GetComponentInParent<Button>().interactable = false;
+            buttonTextList[i].GetComponentInParent<Button>().interactable = false;
         }
     }
 
+    int[] ChangeLocation(string arrowName, int valueMove)
+    {
+        int xChange = 0;
+        int yChange = 0;
+        if (arrowName == upArrowName)
+        {
+            yChange = valueMove;
+        }
+        else if (arrowName == upRightArrowName)
+        {
+            xChange = valueMove;
+            yChange = valueMove;
+        }
+        else if (arrowName == upLeftArrowName)
+        {
+            xChange = -valueMove;
+            yChange = valueMove;
+        }
+        else if (arrowName == rightArrowName)
+        {
+            xChange = valueMove;
+        }
+        else if (arrowName == leftArrowName)
+        {
+            xChange = -valueMove;
+        }
+        else if (arrowName == downArrowName)
+        {
+            yChange = -valueMove;
+        }
+        else if (arrowName == downLeftArrowName)
+        {
+            xChange = -valueMove;
+            yChange = -valueMove;
+        }
+        else if (arrowName == downRightArrowName)
+        {
+            xChange = valueMove;
+            yChange = -valueMove;
+        }
+        return new int[] { xChange, yChange };
+    }
 }
