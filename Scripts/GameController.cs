@@ -219,6 +219,7 @@ public class GameController : MonoBehaviour {
         string number = button.GetComponentInChildren<Text>().text;
         FindButtonIndexes(number);
         ChangeButtonsPlaces(number);
+        CheckIfGameFinished(button);
     }
 
     void FindButtonIndexes(string number)
@@ -291,12 +292,33 @@ public class GameController : MonoBehaviour {
             xChange = 1;
             yChange = -1;
         }
-
-
         newButtonX = (clickedButtonX + xChange + rows) % rows;
         newButtonY = (clickedButtonY + yChange + rows) % rows;
         newButtonNumber = buttonArray[newButtonX, newButtonY].text;
-        Debug.Log("newX: " + newButtonX + ", newY: " + newButtonY + ", newNumber: " + newButtonNumber);
-
     }
+
+    void CheckIfGameFinished(Button button)
+    {
+        if (buttonArray[0, 0].text == "1" && buttonArray[1, 0].text == "2" && buttonArray[2, 0].text == "3")
+        {
+            ChangeColorToGreen(buttonArray[0, 0]);
+            ChangeColorToGreen(buttonArray[1, 0]);
+            ChangeColorToGreen(buttonArray[2, 0]);
+            Debug.Log("Game finished");
+        }
+        else
+        {
+            Debug.Log("Not yet");
+        }
+    }
+
+    void ChangeColorToGreen(Text text)
+    {
+        Button b = text.GetComponentInParent<Button>();
+        ColorBlock cb = b.colors;
+        cb.normalColor = Color.green;
+        cb.highlightedColor = Color.green;
+        b.colors = cb;
+    }
+
 }
