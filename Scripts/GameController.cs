@@ -16,8 +16,8 @@ public class GameController : MonoBehaviour {
     public Sprite downArrow;
     public Sprite downRightArrow;
     public Sprite downLeftArrow;
-    private int gridsInRow = 3;
-    private int gridsInColumn = 4;
+    private int gridsInRow = 2;
+    private int gridsInColumn = 2;
     private Text[,] buttonTextArray;
     private Image[,] imageArray;
     private List<int> numbers;
@@ -66,7 +66,7 @@ public class GameController : MonoBehaviour {
     {
         CalculateNumberOfDivisions();
         gridSize = CalculateGridSize();
-        ModifyPrefabGridSize();
+        ModifySizeAndMovePrefabGridSize();
         CalculateBoardSizes();
         ResizeBoard();
         CreateAndArrangeGrids();
@@ -87,7 +87,7 @@ public class GameController : MonoBehaviour {
         return Math.Min(gridHeigth, gridWidth);
     }
 
-    private void ModifyPrefabGridSize()
+    private void ModifySizeAndMovePrefabGridSize()
     {
         RectTransform gridPrefabRectTransform = gridSpacePrefab.GetComponent<RectTransform>();
         gridPrefabRectTransform.sizeDelta = new Vector2(gridSize, gridSize);
@@ -117,6 +117,10 @@ public class GameController : MonoBehaviour {
                 newSmoke.name = "Grid" + x + y;
                 newSmoke.transform.SetParent(canvasObject.transform, false);
                 newSmoke.transform.localScale = new Vector3(1, 1, 1);
+                RectTransform gridPrefabRectTransform = newSmoke.GetComponent<RectTransform>();
+                int gridsAsset = gridSize + 2 * gridAssetFromDivisions + divisionLineWidth;
+                int a = (int)(y * gridsAsset + gridsAsset / 2);
+                gridPrefabRectTransform.anchoredPosition = new Vector2((int)(x * gridsAsset + gridsAsset/2) - (int)(boardSizeWidth / 2), (int)(y * gridsAsset + gridsAsset / 2) - (int)(boardSizeHeight / 2));
             }
         }
 

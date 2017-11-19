@@ -22,7 +22,7 @@ GameObject:
   - component: {fileID: 222404164292941404}
   - component: {fileID: 114558289839653164}
   m_Layer: 5
-  m_Name: Grid
+  m_Name: DivisionLine
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
