@@ -40,8 +40,13 @@ public class GameController : MonoBehaviour {
     private int newPositionY;
     private string newButtonNumber;
     private int numberOfMoves = 20;
-    public GameObject prefab;
+    public GameObject gridSpacePrefab;
     public GameObject canvasObject;
+    public GameObject board;
+    public GameObject divisionLine;
+    private int boardSize;
+    private int gridSize;
+    private int divisionLineSWidth = 5;
 
     //          BOARD
     //  \x   0   1   2
@@ -53,15 +58,36 @@ public class GameController : MonoBehaviour {
 
     void Start()
     {
-        for (int y = 0; y < 1; y++)
+        GetBoardSize();
+        CalculateGridSize();
+        CreateAndArrangeGrids();
+    }
+
+    private void GetBoardSize()
+    {
+        RectTransform panelRectTransform = board.GetComponent<RectTransform>();
+        boardSize = (int)panelRectTransform.sizeDelta.x;
+    }
+
+    private void CalculateGridSize()
+    {
+
+    }
+
+
+    private void CreateAndArrangeGrids()
+    {
+        for (int y = 0; y < rows; y++)
         {
-            for (int x = 0; x < 1; x++)
+            for (int x = 0; x < columns; x++)
             {
-                GameObject newSmoke = Instantiate(prefab, new Vector3(0, 0, 0), Quaternion.Euler(0, 0, 0)) as GameObject;
+                GameObject newSmoke = Instantiate(gridSpacePrefab, new Vector3(0, 0, 0), Quaternion.Euler(0, 0, 0)) as GameObject;
+                newSmoke.name = "Grid" + x + y;
                 newSmoke.transform.SetParent(canvasObject.transform, false);
                 newSmoke.transform.localScale = new Vector3(1, 1, 1);
             }
         }
+
     }
 
     private void Awake()
