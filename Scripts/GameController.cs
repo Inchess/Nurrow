@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using System;
 
 public class GameController : MonoBehaviour {
 
@@ -15,8 +16,8 @@ public class GameController : MonoBehaviour {
     public Sprite downArrow;
     public Sprite downRightArrow;
     public Sprite downLeftArrow;
-    private int rows = 3;
-    private int columns = 3;
+    private int gridsInRow = 3;
+    private int gridsInColumn = 3;
     private Text[,] buttonTextArray;
     private Image[,] imageArray;
     private List<int> numbers;
@@ -46,7 +47,10 @@ public class GameController : MonoBehaviour {
     public GameObject divisionLine;
     private int boardSize;
     private int gridSize;
-    private int divisionLineSWidth = 5;
+    private int divisionLineWidth = 5;
+    private int numberOfDivisionsInWidth;
+    private int numberOfDivisionsInHeight;
+    private int gridAssetFromDivisions = 20;
 
     //          BOARD
     //  \x   0   1   2
@@ -59,6 +63,7 @@ public class GameController : MonoBehaviour {
     void Start()
     {
         GetBoardSize();
+        CalculateNumberOfDivisions();
         CalculateGridSize();
         CreateAndArrangeGrids();
     }
@@ -69,17 +74,28 @@ public class GameController : MonoBehaviour {
         boardSize = (int)panelRectTransform.sizeDelta.x;
     }
 
+    private void CalculateNumberOfDivisions()
+    {
+        numberOfDivisionsInWidth = gridsInColumn - 1;
+        numberOfDivisionsInHeight = gridsInRow - 1;
+    }
+
     private void CalculateGridSize()
     {
-
+        int totalWidthForGrids = boardSize - (numberOfDivisionsInWidth * divisionLineWidth) - (gridsInColumn * 2 * gridAssetFromDivisions);
+        int gridWidth = totalWidthForGrids / gridsInColumn;
+        int totalHeightForGrids = boardSize - (numberOfDivisionsInHeight * divisionLineWidth) - (gridsInRow * 2 * gridAssetFromDivisions);
+        int gridHeigth = totalHeightForGrids / gridsInRow;
+        int gridSize = Math.Min(gridHeigth, gridWidth);
+        Debug.Log("Grids width: " + gridWidth + ", grids height: " + gridHeigth + ", grid size: " + gridSize);
     }
 
 
     private void CreateAndArrangeGrids()
     {
-        for (int y = 0; y < rows; y++)
+        for (int y = 0; y < gridsInRow; y++)
         {
-            for (int x = 0; x < columns; x++)
+            for (int x = 0; x < gridsInColumn; x++)
             {
                 GameObject newSmoke = Instantiate(gridSpacePrefab, new Vector3(0, 0, 0), Quaternion.Euler(0, 0, 0)) as GameObject;
                 newSmoke.name = "Grid" + x + y;
@@ -109,8 +125,8 @@ public class GameController : MonoBehaviour {
 
     private void InstantiateVariables()
     {
-        buttonTextArray = new Text[rows, columns];
-        imageArray = new Image[rows, columns];
+        buttonTextArray = new Text[gridsInRow, gridsInColumn];
+        imageArray = new Image[gridsInRow, gridsInColumn];
         numbers = new List<int>(new int[] { 1, 2, 3, 4, 5, 6, 7, 8, 9 });
         numbersLeft = new List<int>(new int[] { 1, 2, 3, 4, 5, 6, 7, 8, 9 });
         arrowsList = new List<Sprite>(new Sprite[] { upArrow, upLeftArrow, upRightArrow, leftArrow, rightArrow, downArrow, downLeftArrow, downRightArrow });
@@ -160,7 +176,7 @@ public class GameController : MonoBehaviour {
 
     void PrepareArrowsToUse()
     {
-        int numOfButtons = rows * columns;
+        int numOfButtons = gridsInRow * gridsInColumn;
         int allArrowsOccurrence = numOfButtons / arrowsList.Count;
         int extraArrows = numOfButtons % arrowsList.Count;
         for (int i = 0; i < allArrowsOccurrence; i++)
@@ -177,15 +193,15 @@ public class GameController : MonoBehaviour {
 
     void AddNumbersToButtons()
     {
-        for (int j = 0; j < rows; j++)
+        for (int j = 0; j < gridsInRow; j++)
         {
-            for (int i = 0; i < columns; i++)
+            for (int i = 0; i < gridsInColumn; i++)
             { 
                 int randomNumber = 0;
                 do
                 {
                     randomNumber = rand.Next(0, numbersLeft.Count);
-                } while (j == 0 && randomNumber < rows);
+                } while (j == 0 && randomNumber < gridsInRow);
                 buttonTextArray[i, j].text = numbersLeft[randomNumber].ToString();
                 numbersLeft.RemoveAt(randomNumber);
             }
@@ -194,9 +210,9 @@ public class GameController : MonoBehaviour {
 
     void AddArrowsToButtons()
     {
-        for (int i = 0; i < rows; i++)
+        for (int i = 0; i < gridsInRow; i++)
         {
-            for (int j = 0; j < columns; j++)
+            for (int j = 0; j < gridsInColumn; j++)
             {
                 int index = rand.Next(0, arrowsToUse.Count);
                 imageArray[i, j].sprite = arrowsToUse[index];
@@ -225,9 +241,9 @@ public class GameController : MonoBehaviour {
 
     void FindButtonIndexes(string number)
     {
-        for (int i = 0; i < rows; i++)
+        for (int i = 0; i < gridsInRow; i++)
         {
-            for (int j = 0; j < columns; j++)
+            for (int j = 0; j < gridsInColumn; j++)
             {
                 if (buttonTextArray[i, j].text == number)
                 {
@@ -250,8 +266,8 @@ public class GameController : MonoBehaviour {
     {
         int moveValue = 1;
         int[] arrowTransition = ChangeLocation(clickedButtonArrowName, moveValue);
-        newPositionX = (clickedButtonX + arrowTransition[0] + rows) % rows;
-        newPositionY = (clickedButtonY + arrowTransition[1] + rows) % rows;
+        newPositionX = (clickedButtonX + arrowTransition[0] + gridsInRow) % gridsInRow;
+        newPositionY = (clickedButtonY + arrowTransition[1] + gridsInRow) % gridsInRow;
         newButtonNumber = buttonTextArray[newPositionX, newPositionY].text;
     }
 
