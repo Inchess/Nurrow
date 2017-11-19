@@ -40,7 +40,8 @@ public class GameController : MonoBehaviour {
     private int newPositionY;
     private string newButtonNumber;
     private int numberOfMoves = 20;
-
+    public GameObject prefab;
+    public GameObject canvasObject;
 
     //          BOARD
     //  \x   0   1   2
@@ -50,16 +51,29 @@ public class GameController : MonoBehaviour {
     //  0   |1   2   3|
     //      |_________|
 
+    void Start()
+    {
+        for (int y = 0; y < 1; y++)
+        {
+            for (int x = 0; x < 1; x++)
+            {
+                GameObject newSmoke = Instantiate(prefab, new Vector3(0, 0, 0), Quaternion.Euler(0, 0, 0)) as GameObject;
+                newSmoke.transform.SetParent(canvasObject.transform, false);
+                newSmoke.transform.localScale = new Vector3(1, 1, 1);
+            }
+        }
+    }
+
     private void Awake()
     {
-        InstantiateObjects();
-        InstantiateVariables();
-        SetArrowsNames();
-        SetGameControllerReferenceOnButtons();
-        Change1DTo2DArray();
-        PrepareArrowsToUse();
-        AddNumbersToButtons();
-        AddArrowsToButtons();
+        //InstantiateObjects();
+        //InstantiateVariables();
+        //SetArrowsNames();
+        //SetGameControllerReferenceOnButtons();
+        //Change1DTo2DArray();
+        //PrepareArrowsToUse();
+        //AddNumbersToButtons();
+        //AddArrowsToButtons();
     }
 
     private void InstantiateObjects()
