@@ -17,7 +17,7 @@ public class GameController : MonoBehaviour {
     public Sprite downRightArrow;
     public Sprite downLeftArrow;
     private int gridsInRow = 3;
-    private int gridsInColumn = 3;
+    private int gridsInColumn = 4;
     private Text[,] buttonTextArray;
     private Image[,] imageArray;
     private List<int> numbers;
@@ -45,7 +45,9 @@ public class GameController : MonoBehaviour {
     public GameObject canvasObject;
     public GameObject board;
     public GameObject divisionLine;
-    private int boardSize;
+    private int maxBoardSize = 512;
+    private int boardSizeHeight;
+    private int boardSizeWidth;
     private int gridSize;
     private int divisionLineWidth = 5;
     private int numberOfDivisionsInWidth;
@@ -62,16 +64,12 @@ public class GameController : MonoBehaviour {
 
     void Start()
     {
-        GetBoardSize();
         CalculateNumberOfDivisions();
-        CalculateGridSize();
+        gridSize = CalculateGridSize();
+        ModifyPrefabGridSize();
+        CalculateBoardSizes();
+        ResizeBoard();
         CreateAndArrangeGrids();
-    }
-
-    private void GetBoardSize()
-    {
-        RectTransform panelRectTransform = board.GetComponent<RectTransform>();
-        boardSize = (int)panelRectTransform.sizeDelta.x;
     }
 
     private void CalculateNumberOfDivisions()
@@ -80,14 +78,32 @@ public class GameController : MonoBehaviour {
         numberOfDivisionsInHeight = gridsInRow - 1;
     }
 
-    private void CalculateGridSize()
+    private int CalculateGridSize()
     {
-        int totalWidthForGrids = boardSize - (numberOfDivisionsInWidth * divisionLineWidth) - (gridsInColumn * 2 * gridAssetFromDivisions);
-        int gridWidth = totalWidthForGrids / gridsInColumn;
-        int totalHeightForGrids = boardSize - (numberOfDivisionsInHeight * divisionLineWidth) - (gridsInRow * 2 * gridAssetFromDivisions);
-        int gridHeigth = totalHeightForGrids / gridsInRow;
-        int gridSize = Math.Min(gridHeigth, gridWidth);
-        Debug.Log("Grids width: " + gridWidth + ", grids height: " + gridHeigth + ", grid size: " + gridSize);
+        int totalWidthForGrids = maxBoardSize - (numberOfDivisionsInWidth * divisionLineWidth) - (gridsInColumn * 2 * gridAssetFromDivisions);
+        int gridWidth = (int)totalWidthForGrids / gridsInColumn;
+        int totalHeightForGrids = maxBoardSize - (numberOfDivisionsInHeight * divisionLineWidth) - (gridsInRow * 2 * gridAssetFromDivisions);
+        int gridHeigth = (int)totalHeightForGrids / gridsInRow;
+        return Math.Min(gridHeigth, gridWidth);
+    }
+
+    private void ModifyPrefabGridSize()
+    {
+        RectTransform gridPrefabRectTransform = gridSpacePrefab.GetComponent<RectTransform>();
+        gridPrefabRectTransform.sizeDelta = new Vector2(gridSize, gridSize);
+    }
+
+    private void CalculateBoardSizes()
+    {
+        boardSizeHeight = gridsInRow * gridSize + 2 * gridsInRow * gridAssetFromDivisions + numberOfDivisionsInHeight * divisionLineWidth;
+        boardSizeWidth = gridsInColumn * gridSize + 2 * gridsInColumn * gridAssetFromDivisions + numberOfDivisionsInWidth * divisionLineWidth;
+    }
+
+    private void ResizeBoard()
+    {
+        RectTransform boardRectTransform = board.GetComponent<RectTransform>();
+        boardRectTransform.sizeDelta = new Vector2(boardSizeWidth, boardSizeHeight);
+        Debug.Log("H: " + boardSizeHeight + ", W: " + boardSizeWidth);
     }
 
 
