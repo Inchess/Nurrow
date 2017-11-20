@@ -16,8 +16,8 @@ public class GameController : MonoBehaviour {
     public Sprite downArrow;
     public Sprite downRightArrow;
     public Sprite downLeftArrow;
-    private int gridsInRow = 2;
-    private int gridsInColumn = 2;
+    private int gridsInRow = 3;
+    private int gridsInColumn = 3;
     private Text[,] buttonTextArray;
     private Image[,] imageArray;
     private List<int> numbers;
@@ -45,6 +45,8 @@ public class GameController : MonoBehaviour {
     public GameObject canvasObject;
     public GameObject board;
     public GameObject divisionLine;
+    public GameObject textPrefab;
+    public GameObject image;
     private int maxBoardSize = 512;
     private int boardSizeHeight;
     private int boardSizeWidth;
@@ -81,9 +83,9 @@ public class GameController : MonoBehaviour {
     private int CalculateGridSize()
     {
         int totalWidthForGrids = maxBoardSize - (numberOfDivisionsInWidth * divisionLineWidth) - (gridsInColumn * 2 * gridAssetFromDivisions);
-        int gridWidth = (int)totalWidthForGrids / gridsInColumn;
+        int gridWidth = totalWidthForGrids / gridsInColumn;
         int totalHeightForGrids = maxBoardSize - (numberOfDivisionsInHeight * divisionLineWidth) - (gridsInRow * 2 * gridAssetFromDivisions);
-        int gridHeigth = (int)totalHeightForGrids / gridsInRow;
+        int gridHeigth = totalHeightForGrids / gridsInRow;
         return Math.Min(gridHeigth, gridWidth);
     }
 
@@ -109,6 +111,8 @@ public class GameController : MonoBehaviour {
 
     private void CreateAndArrangeGrids()
     {
+        rand = new System.Random();
+        numbersLeft = new List<int>(new int[] { 1, 2, 3, 4, 5, 6, 7, 8, 9 });
         for (int y = 0; y < gridsInRow; y++)
         {
             for (int x = 0; x < gridsInColumn; x++)
@@ -119,21 +123,22 @@ public class GameController : MonoBehaviour {
                 newSmoke.transform.localScale = new Vector3(1, 1, 1);
                 RectTransform gridPrefabRectTransform = newSmoke.GetComponent<RectTransform>();
                 int gridsAsset = gridSize + 2 * gridAssetFromDivisions + divisionLineWidth;
-                int a = (int)(y * gridsAsset + gridsAsset / 2);
-                gridPrefabRectTransform.anchoredPosition = new Vector2((int)(x * gridsAsset + gridsAsset/2) - (int)(boardSizeWidth / 2), (int)(y * gridsAsset + gridsAsset / 2) - (int)(boardSizeHeight / 2));
+                gridPrefabRectTransform.anchoredPosition = new Vector2((x * gridsAsset + gridsAsset/2) - (boardSizeWidth / 2), (y * gridsAsset + gridsAsset / 2) - (boardSizeHeight / 2));
+                buttonTextArray[x, y] = newSmoke.GetComponentInChildren<Text>();
             }
         }
+        AddNumbersToButtons();
 
     }
 
     private void Awake()
     {
-        //InstantiateObjects();
-        //InstantiateVariables();
-        //SetArrowsNames();
+        InstantiateObjects();
+        InstantiateVariables();
+        SetArrowsNames();
         //SetGameControllerReferenceOnButtons();
         //Change1DTo2DArray();
-        //PrepareArrowsToUse();
+        PrepareArrowsToUse();
         //AddNumbersToButtons();
         //AddArrowsToButtons();
     }
@@ -147,11 +152,23 @@ public class GameController : MonoBehaviour {
     {
         buttonTextArray = new Text[gridsInRow, gridsInColumn];
         imageArray = new Image[gridsInRow, gridsInColumn];
-        numbers = new List<int>(new int[] { 1, 2, 3, 4, 5, 6, 7, 8, 9 });
-        numbersLeft = new List<int>(new int[] { 1, 2, 3, 4, 5, 6, 7, 8, 9 });
+        numbers = new List<int>();
+        numbersLeft = new List<int>();
+        AddNumbersToList(numbers);
+        AddNumbersToList(numbersLeft);
+        //numbers = new List<int>(new int[] { 1, 2, 3, 4, 5, 6, 7, 8, 9 });
+        //numbersLeft = new List<int>(new int[] { 1, 2, 3, 4, 5, 6, 7, 8, 9 });
         arrowsList = new List<Sprite>(new Sprite[] { upArrow, upLeftArrow, upRightArrow, leftArrow, rightArrow, downArrow, downLeftArrow, downRightArrow });
         arrowsListCopy = new List<Sprite>(new Sprite[] { upArrow, upLeftArrow, upRightArrow, leftArrow, rightArrow, downArrow, downLeftArrow, downRightArrow });
         arrowsToUse = new List<Sprite>();
+    }
+
+    private void AddNumbersToList(List<int> list)
+    {
+        for (int i = 1; i <= gridsInRow * gridsInColumn; i++)
+        {
+            list.Add(i);
+        }
     }
 
     private void SetArrowsNames()

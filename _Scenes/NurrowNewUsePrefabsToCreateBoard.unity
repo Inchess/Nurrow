@@ -382,6 +382,8 @@ MonoBehaviour:
   canvasObject: {fileID: 1541831921}
   board: {fileID: 1478666465}
   divisionLine: {fileID: 0}
+  textPrefab: {fileID: 1936017188179078, guid: 38416d5360085ee459bbadd042fb5a8a, type: 2}
+  image: {fileID: 1109734412659184, guid: 38416d5360085ee459bbadd042fb5a8a, type: 2}
 --- !u!4 &1193352991
 Transform:
   m_ObjectHideFlags: 0
