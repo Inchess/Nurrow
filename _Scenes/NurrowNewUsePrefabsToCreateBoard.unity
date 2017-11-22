@@ -349,26 +349,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a3f913faf1710bd439c11b3fa85f4ed6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  buttonTextList:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  imageList:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
   upArrow: {fileID: 21300000, guid: cde353eb47af60c47a292730daea898e, type: 3}
   upLeftArrow: {fileID: 21300000, guid: fb2220fec72c359469c1d3ab27eaef34, type: 3}
   upRightArrow: {fileID: 21300000, guid: f2bce1097b701c549a21d6a280913a3f, type: 3}
@@ -380,7 +360,7 @@ MonoBehaviour:
   gridSpacePrefab: {fileID: 1292936747608290, guid: 38416d5360085ee459bbadd042fb5a8a,
     type: 2}
   canvasObject: {fileID: 1541831921}
-  board: {fileID: 1478666465}
+  boardPanel: {fileID: 1478666465}
   divisionLine: {fileID: 0}
   textPrefab: {fileID: 1936017188179078, guid: 38416d5360085ee459bbadd042fb5a8a, type: 2}
   image: {fileID: 1109734412659184, guid: 38416d5360085ee459bbadd042fb5a8a, type: 2}

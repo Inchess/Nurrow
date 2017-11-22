@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class Board : MonoBehaviour {
+public class BoardScript : MonoBehaviour {
 
     private List<Sprite> arrowsList;
     private GameController gameController;
@@ -12,7 +12,7 @@ public class Board : MonoBehaviour {
     {
     }
 
-    public void SetGameControllerReference(GameController controller)
+    public void Abc(GameController controller)
     {
         gameController = controller;
     }

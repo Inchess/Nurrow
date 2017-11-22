@@ -6,7 +6,7 @@ using System;
 
 public class GameController : MonoBehaviour {
 
-    private Board boardObject;
+    private BoardScript board;
     private Arrows arrows;
     //public Text[] buttonTextList;
     //public Image[] imageList;
@@ -45,7 +45,7 @@ public class GameController : MonoBehaviour {
     private int numberOfMoves = 20;
     public GameObject gridSpacePrefab;
     public GameObject canvasObject;
-    public GameObject board;
+    public GameObject boardPanel;
     public GameObject divisionLine;
     public GameObject textPrefab;
     public GameObject image;
@@ -83,6 +83,8 @@ public class GameController : MonoBehaviour {
     {
         rand = new System.Random();
         arrows = new Arrows();
+        board = new BoardScript();
+        board.Abc();
     }
 
     void Start()
@@ -124,7 +126,7 @@ public class GameController : MonoBehaviour {
 
     private void ResizeBoard()
     {
-        RectTransform boardRectTransform = board.GetComponent<RectTransform>();
+        RectTransform boardRectTransform = boardPanel.GetComponent<RectTransform>();
         boardRectTransform.sizeDelta = new Vector2(boardSizeWidth, boardSizeHeight);
         Debug.Log("H: " + boardSizeHeight + ", W: " + boardSizeWidth);
     }
