@@ -8,8 +8,8 @@ public class GameController : MonoBehaviour {
 
     private Board boardObject;
     private Arrows arrows;
-    public Text[] buttonTextList;
-    public Image[] imageList;
+    //public Text[] buttonTextList;
+    //public Image[] imageList;
     public Sprite upArrow;
     public Sprite upLeftArrow;
     public Sprite upRightArrow;
@@ -145,11 +145,11 @@ public class GameController : MonoBehaviour {
                 int gridsAsset = gridSize + 2 * gridAssetFromDivisions + divisionLineWidth;
                 gridPrefabRectTransform.anchoredPosition = new Vector2((x * gridsAsset + gridsAsset/2) - (boardSizeWidth / 2), (y * gridsAsset + gridsAsset / 2) - (boardSizeHeight / 2));
                 buttonTextArray[x, y] = newSmoke.GetComponentInChildren<Text>();
-                imageArray[x, y] = newSmoke.GetComponentInChildren<Image>();
+                //imageArray[x, y] = newSmoke.GetComponentInChildren<Image>();
             }
         }
         AddNumbersToButtons();
-        AddArrowsToButtons();
+        //AddArrowsToButtons();
 
     }
 
@@ -188,33 +188,33 @@ public class GameController : MonoBehaviour {
         downRightArrow.name = downRightArrowName;
     }
 
-    void SetGameControllerReferenceOnButtons()
-    {
-        for (int i = 0; i < buttonTextList.Length; i++)
-        {
-            buttonTextList[i].GetComponentInParent<GridSpace>().SetGameControllerReference(this);
-            imageList[i].GetComponentInParent<GridSpace>().SetGameControllerReference(this);
-        }
-    }
+    //void SetGameControllerReferenceOnButtons()
+    //{
+    //    for (int i = 0; i < buttonTextList.Length; i++)
+    //    {
+    //        buttonTextList[i].GetComponentInParent<GridSpace>().SetGameControllerReference(this);
+    //        imageList[i].GetComponentInParent<GridSpace>().SetGameControllerReference(this);
+    //    }
+    //}
 
-    void Change1DTo2DArray()
-    {
-        Match1DElementTo2D(0, 0, 2);
-        Match1DElementTo2D(1, 1, 2);
-        Match1DElementTo2D(2, 2, 2);
-        Match1DElementTo2D(3, 0, 1);
-        Match1DElementTo2D(4, 1, 1);
-        Match1DElementTo2D(5, 2, 1);
-        Match1DElementTo2D(6, 0, 0);
-        Match1DElementTo2D(7, 1, 0);
-        Match1DElementTo2D(8, 2, 0);
-    }
+    //void Change1DTo2DArray()
+    //{
+    //    Match1DElementTo2D(0, 0, 2);
+    //    Match1DElementTo2D(1, 1, 2);
+    //    Match1DElementTo2D(2, 2, 2);
+    //    Match1DElementTo2D(3, 0, 1);
+    //    Match1DElementTo2D(4, 1, 1);
+    //    Match1DElementTo2D(5, 2, 1);
+    //    Match1DElementTo2D(6, 0, 0);
+    //    Match1DElementTo2D(7, 1, 0);
+    //    Match1DElementTo2D(8, 2, 0);
+    //}
 
-    void Match1DElementTo2D(int index, int x2D, int y2D)
-    {
-        buttonTextArray[x2D, y2D] = buttonTextList[index];
-        imageArray[x2D, y2D] = imageList[index];
-    }
+    //void Match1DElementTo2D(int index, int x2D, int y2D)
+    //{
+    //    buttonTextArray[x2D, y2D] = buttonTextList[index];
+    //    imageArray[x2D, y2D] = imageList[index];
+    //}
 
     void PrepareArrowsToUse()
     {
@@ -317,7 +317,7 @@ public class GameController : MonoBehaviour {
     {
         if (numberOfMoves <= 0)
         {
-            LockButtons();
+            //LockButtons();
         }
         if (buttonTextArray[0, 0].text == "1" && buttonTextArray[1, 0].text == "2" && buttonTextArray[2, 0].text == "3")
         {
@@ -360,13 +360,13 @@ public class GameController : MonoBehaviour {
 
     }
 
-    void LockButtons()
-    {
-        for (int i = 0; i < buttonTextList.Length; i++)
-        {
-            buttonTextList[i].GetComponentInParent<Button>().interactable = false;
-        }
-    }
+    //void LockButtons()
+    //{
+    //    for (int i = 0; i < buttonTextList.Length; i++)
+    //    {
+    //        buttonTextList[i].GetComponentInParent<Button>().interactable = false;
+    //    }
+    //}
 
     int[] ChangeLocation(string arrowName, int valueMove)
     {
