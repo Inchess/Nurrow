@@ -6,6 +6,8 @@ using System;
 
 public class GameController : MonoBehaviour {
 
+    private Board boardObject;
+    private Arrows arrows;
     public Text[] buttonTextList;
     public Image[] imageList;
     public Sprite upArrow;
@@ -55,6 +57,7 @@ public class GameController : MonoBehaviour {
     private int numberOfDivisionsInWidth;
     private int numberOfDivisionsInHeight;
     private int gridAssetFromDivisions = 20;
+    
 
     //          BOARD
     //  \x   0   1   2
@@ -63,6 +66,24 @@ public class GameController : MonoBehaviour {
     //  1   |6   5   4|
     //  0   |1   2   3|
     //      |_________|
+
+    private void Awake()
+    {
+        InstantiateObjects();
+        InstantiateVariables();
+        SetArrowsNames();
+        //SetGameControllerReferenceOnButtons();
+        //Change1DTo2DArray();
+        PrepareArrowsToUse();
+        //AddNumbersToButtons();
+        //AddArrowsToButtons();
+    }
+
+    private void InstantiateObjects()
+    {
+        rand = new System.Random();
+        arrows = new Arrows();
+    }
 
     void Start()
     {
@@ -112,7 +133,6 @@ public class GameController : MonoBehaviour {
     private void CreateAndArrangeGrids()
     {
         rand = new System.Random();
-        numbersLeft = new List<int>(new int[] { 1, 2, 3, 4, 5, 6, 7, 8, 9 });
         for (int y = 0; y < gridsInRow; y++)
         {
             for (int x = 0; x < gridsInColumn; x++)
@@ -125,27 +145,12 @@ public class GameController : MonoBehaviour {
                 int gridsAsset = gridSize + 2 * gridAssetFromDivisions + divisionLineWidth;
                 gridPrefabRectTransform.anchoredPosition = new Vector2((x * gridsAsset + gridsAsset/2) - (boardSizeWidth / 2), (y * gridsAsset + gridsAsset / 2) - (boardSizeHeight / 2));
                 buttonTextArray[x, y] = newSmoke.GetComponentInChildren<Text>();
+                imageArray[x, y] = newSmoke.GetComponentInChildren<Image>();
             }
         }
         AddNumbersToButtons();
+        AddArrowsToButtons();
 
-    }
-
-    private void Awake()
-    {
-        InstantiateObjects();
-        InstantiateVariables();
-        SetArrowsNames();
-        //SetGameControllerReferenceOnButtons();
-        //Change1DTo2DArray();
-        PrepareArrowsToUse();
-        //AddNumbersToButtons();
-        //AddArrowsToButtons();
-    }
-
-    private void InstantiateObjects()
-    {
-        rand = new System.Random();
     }
 
     private void InstantiateVariables()
