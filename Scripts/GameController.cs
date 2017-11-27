@@ -84,7 +84,6 @@ public class GameController : MonoBehaviour {
         rand = new System.Random();
         arrows = new Arrows();
         board = new BoardScript();
-        board.Abc();
     }
 
     void Start()
@@ -147,11 +146,11 @@ public class GameController : MonoBehaviour {
                 int gridsAsset = gridSize + 2 * gridAssetFromDivisions + divisionLineWidth;
                 gridPrefabRectTransform.anchoredPosition = new Vector2((x * gridsAsset + gridsAsset/2) - (boardSizeWidth / 2), (y * gridsAsset + gridsAsset / 2) - (boardSizeHeight / 2));
                 buttonTextArray[x, y] = newSmoke.GetComponentInChildren<Text>();
-                //imageArray[x, y] = newSmoke.GetComponentInChildren<Image>();
+                imageArray[x, y] = newSmoke.GetComponentInChildren<Image>();
             }
         }
         AddNumbersToButtons();
-        //AddArrowsToButtons();
+        AddArrowsToButtons();
 
     }
 
@@ -254,14 +253,14 @@ public class GameController : MonoBehaviour {
 
     void AddArrowsToButtons()
     {
-        for (int i = 0; i < gridsInRow; i++)
+        for (int i = 1; i < gridsInRow; i++)
         {
             for (int j = 0; j < gridsInColumn; j++)
             {
                 int index = rand.Next(0, arrowsToUse.Count);
                 imageArray[i, j].sprite = arrowsToUse[index];
-                imageArray[i, j].rectTransform.sizeDelta = new Vector2(40, 40);
-                SetArrowLocation(arrowsToUse[index], imageArray[i, j]);
+                //imageArray[i, j].rectTransform.sizeDelta = new Vector2(40, 40);
+                //SetArrowLocation(arrowsToUse[index], imageArray[i, j]);
                 arrowsToUse.RemoveAt(index);
             }
         }
@@ -348,7 +347,7 @@ public class GameController : MonoBehaviour {
         ResetVariables();
         PrepareArrowsToUse();
         AddNumbersToButtons();
-        AddArrowsToButtons();
+        //AddArrowsToButtons();
         numberOfMoves += 5;
     }
 
