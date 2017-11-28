@@ -5,9 +5,7 @@ using UnityEngine.UI;
 using System;
 
 public class GameController : MonoBehaviour {
-
-    private BoardScript board;
-    private Arrows arrows;
+    
     public Sprite upArrow;
     public Sprite upLeftArrow;
     public Sprite upRightArrow;
@@ -16,8 +14,8 @@ public class GameController : MonoBehaviour {
     public Sprite downArrow;
     public Sprite downRightArrow;
     public Sprite downLeftArrow;
-    private int gridsInRow = 3;
-    private int gridsInColumn = 3;
+    private int gridsInRow = 4;
+    private int gridsInColumn = 2;
     private Text[,] buttonTextArray;
     private Image[,] imageArray;
     private List<int> numbers;
@@ -67,6 +65,7 @@ public class GameController : MonoBehaviour {
 
     private void Awake()
     {
+        CheckCorrectRowsAndColumns();
         InstantiateObjects();
         InstantiateVariables();
         SetArrowsNames();
@@ -77,11 +76,67 @@ public class GameController : MonoBehaviour {
         //AddArrowsToButtons();
     }
 
+    private void CheckCorrectRowsAndColumns()
+    {
+        if (1 >= gridsInRow || gridsInRow >= 6 || 1 >= gridsInColumn || gridsInColumn >= 6)
+        {
+            throw new ArgumentException("Incorrect number of grids! Grids in row: " + gridsInRow + ", grids in column: " + gridsInColumn);
+        }
+    }
+
     private void InstantiateObjects()
     {
         rand = new System.Random();
-        arrows = new Arrows();
-        board = new BoardScript();
+    }
+
+    private void InstantiateVariables()
+    {
+        buttonTextArray = new Text[gridsInRow, gridsInColumn];
+        imageArray = new Image[gridsInRow, gridsInColumn];
+        numbers = new List<int>();
+        numbersLeft = new List<int>();
+        AddNumbersToList(numbers);
+        AddNumbersToList(numbersLeft);
+        arrowsList = new List<Sprite>(new Sprite[] { upArrow, upLeftArrow, upRightArrow, leftArrow, rightArrow, downArrow, downLeftArrow, downRightArrow });
+        arrowsListCopy = new List<Sprite>(new Sprite[] { upArrow, upLeftArrow, upRightArrow, leftArrow, rightArrow, downArrow, downLeftArrow, downRightArrow });
+        arrowsToUse = new List<Sprite>();
+    }
+
+    private void AddNumbersToList(List<int> list)
+    {
+        for (int i = 1; i <= gridsInRow * gridsInColumn; i++)
+        {
+            list.Add(i);
+        }
+    }
+
+    private void SetArrowsNames()
+    {
+        upArrow.name = upArrowName;
+        upRightArrow.name = upRightArrowName;
+        upLeftArrow.name = upLeftArrowName;
+        rightArrow.name = rightArrowName;
+        leftArrow.name = leftArrowName;
+        downArrow.name = downArrowName;
+        downLeftArrow.name = downLeftArrowName;
+        downRightArrow.name = downRightArrowName;
+    }
+
+    void PrepareArrowsToUse()
+    {
+        int numOfButtons = gridsInRow * gridsInColumn;
+        int allArrowsOccurrence = numOfButtons / arrowsList.Count;
+        int extraArrows = numOfButtons % arrowsList.Count;
+        for (int i = 0; i < allArrowsOccurrence; i++)
+        {
+            arrowsToUse.AddRange(arrowsList);
+        }
+        for (int i = 0; i < extraArrows; i++)
+        {
+            int randomNumber = rand.Next(0, arrowsListCopy.Count);
+            arrowsToUse.Add(arrowsListCopy[randomNumber]);
+            arrowsListCopy.RemoveAt(randomNumber);
+        }
     }
 
     void Start()
@@ -117,8 +172,8 @@ public class GameController : MonoBehaviour {
 
     private void CalculateBoardSizes()
     {
-        boardSizeHeight = gridsInRow * gridSize + 2 * gridsInRow * gridAssetFromDivisions + numberOfDivisionsInHeight * divisionLineWidth;
-        boardSizeWidth = gridsInColumn * gridSize + 2 * gridsInColumn * gridAssetFromDivisions + numberOfDivisionsInWidth * divisionLineWidth;
+        boardSizeWidth = gridsInRow * gridSize + 2 * gridsInRow * gridAssetFromDivisions + numberOfDivisionsInHeight * divisionLineWidth;
+        boardSizeHeight = gridsInColumn * gridSize + 2 * gridsInColumn * gridAssetFromDivisions + numberOfDivisionsInWidth * divisionLineWidth;
     }
 
     private void ResizeBoard()
@@ -131,10 +186,9 @@ public class GameController : MonoBehaviour {
 
     private void CreateAndArrangeGrids()
     {
-        rand = new System.Random();
-        for (int y = 0; y < gridsInRow; y++)
+        for (int x = 0; x < gridsInRow; x++)
         {
-            for (int x = 0; x < gridsInColumn; x++)
+            for (int y = 0; y < gridsInColumn; y++)
             {
                 GameObject newSmoke = Instantiate(gridSpacePrefab, new Vector3(0, 0, 0), Quaternion.Euler(0, 0, 0)) as GameObject;
                 newSmoke.name = "Grid" + x + y;
@@ -150,41 +204,6 @@ public class GameController : MonoBehaviour {
         AddNumbersToButtons();
         AddArrowsToButtons();
 
-    }
-
-    private void InstantiateVariables()
-    {
-        buttonTextArray = new Text[gridsInRow, gridsInColumn];
-        imageArray = new Image[gridsInRow, gridsInColumn];
-        numbers = new List<int>();
-        numbersLeft = new List<int>();
-        AddNumbersToList(numbers);
-        AddNumbersToList(numbersLeft);
-        //numbers = new List<int>(new int[] { 1, 2, 3, 4, 5, 6, 7, 8, 9 });
-        //numbersLeft = new List<int>(new int[] { 1, 2, 3, 4, 5, 6, 7, 8, 9 });
-        arrowsList = new List<Sprite>(new Sprite[] { upArrow, upLeftArrow, upRightArrow, leftArrow, rightArrow, downArrow, downLeftArrow, downRightArrow });
-        arrowsListCopy = new List<Sprite>(new Sprite[] { upArrow, upLeftArrow, upRightArrow, leftArrow, rightArrow, downArrow, downLeftArrow, downRightArrow });
-        arrowsToUse = new List<Sprite>();
-    }
-
-    private void AddNumbersToList(List<int> list)
-    {
-        for (int i = 1; i <= gridsInRow * gridsInColumn; i++)
-        {
-            list.Add(i);
-        }
-    }
-
-    private void SetArrowsNames()
-    {
-        upArrow.name = upArrowName;
-        upRightArrow.name = upRightArrowName;
-        upLeftArrow.name = upLeftArrowName;
-        rightArrow.name = rightArrowName;
-        leftArrow.name = leftArrowName;
-        downArrow.name = downArrowName;
-        downLeftArrow.name = downLeftArrowName;
-        downRightArrow.name = downRightArrowName;
     }
 
     //void SetGameControllerReferenceOnButtons()
@@ -215,35 +234,18 @@ public class GameController : MonoBehaviour {
     //    imageArray[x2D, y2D] = imageList[index];
     //}
 
-    void PrepareArrowsToUse()
-    {
-        int numOfButtons = gridsInRow * gridsInColumn;
-        int allArrowsOccurrence = numOfButtons / arrowsList.Count;
-        int extraArrows = numOfButtons % arrowsList.Count;
-        for (int i = 0; i < allArrowsOccurrence; i++)
-        {
-            arrowsToUse.AddRange(arrowsList);
-        }
-        for (int i = 0; i < extraArrows; i++)
-        {
-            int randomNumber = rand.Next(0, arrowsListCopy.Count);
-            arrowsToUse.Add(arrowsListCopy[randomNumber]);
-            arrowsListCopy.RemoveAt(randomNumber);
-        }
-    }
-
     void AddNumbersToButtons()
     {
-        for (int j = 0; j < gridsInRow; j++)
+        for (int y = 0; y < gridsInColumn; y++)
         {
-            for (int i = 0; i < gridsInColumn; i++)
+            for (int x = 0; x < gridsInRow; x++)
             { 
                 int randomNumber = 0;
                 do
                 {
                     randomNumber = rand.Next(0, numbersLeft.Count);
-                } while (j == 0 && randomNumber < gridsInRow);
-                buttonTextArray[i, j].text = numbersLeft[randomNumber].ToString();
+                } while (y == 0 && randomNumber < gridsInRow);
+                buttonTextArray[x, y].text = numbersLeft[randomNumber].ToString();
                 numbersLeft.RemoveAt(randomNumber);
             }
         }
