@@ -14,8 +14,8 @@ public class GameController : MonoBehaviour {
     public Sprite downArrow;
     public Sprite downRightArrow;
     public Sprite downLeftArrow;
-    private int columns = 4;
-    private int rows = 3;
+    private int columns = 5;
+    private int rows = 5;
     private Text[,] buttonTextArray;
     private Image[,] imageArray;
     private List<int> numbers;
@@ -49,10 +49,10 @@ public class GameController : MonoBehaviour {
     private int boardSizeHeight;
     private int boardSizeWidth;
     private int gridSize;
-    private int divisionLineWidth = 5;
+    private int divisionLineWidth = 0;
     private int numberOfDivisionsInWidth;
     private int numberOfDivisionsInHeight;
-    private int gridAssetFromDivisions = 2;
+    private int gridAssetFromDivisions;
     
 
     //          BOARD
@@ -71,7 +71,6 @@ public class GameController : MonoBehaviour {
         SetArrowsNames();
         //SetGameControllerReferenceOnButtons();
         //Change1DTo2DArray();
-        PrepareArrowsToUse();
         //AddNumbersToButtons();
         //AddArrowsToButtons();
     }
@@ -129,6 +128,38 @@ public class GameController : MonoBehaviour {
         downRightArrow.name = downRightArrowName;
     }
 
+    void Start()
+    {
+        ModifyVariablesValues();
+        PrepareArrowsToUse();
+        CalculateNumberOfDivisions();
+        gridSize = CalculateGridSize();
+        ModifySizeAndMovePrefabGridSize();
+        CalculateBoardSizes();
+        ResizeBoard();
+        CreateAndArrangeGrids();
+    }
+
+    private void ModifyVariablesValues()
+    {
+        if (columns == 2)
+        {
+            gridAssetFromDivisions = 20;
+        } else if (columns == 3)
+        {
+            gridAssetFromDivisions = 14;
+        } else if (columns == 4)
+        {
+            gridAssetFromDivisions = 7;
+        } else if (columns == 5)
+        {
+            gridAssetFromDivisions = 1;
+        } else
+        {
+            throw new Exception("Incorrect number of columns: " + columns);
+        }
+    }
+
     void PrepareArrowsToUse()
     {
         int numOfButtons = columns * rows;
@@ -144,16 +175,6 @@ public class GameController : MonoBehaviour {
             arrowsToUse.Add(arrowsListCopy[randomNumber]);
             arrowsListCopy.RemoveAt(randomNumber);
         }
-    }
-
-    void Start()
-    {
-        CalculateNumberOfDivisions();
-        gridSize = CalculateGridSize();
-        ModifySizeAndMovePrefabGridSize();
-        CalculateBoardSizes();
-        ResizeBoard();
-        CreateAndArrangeGrids();
     }
 
     private void CalculateNumberOfDivisions()
