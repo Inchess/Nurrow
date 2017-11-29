@@ -101,7 +101,6 @@ public class GameController : MonoBehaviour {
 
     private void SetArrowsNames()
     {
-        CheckCorrectRowsAndColumns();
         upArrow.name = upArrowName;
         upRightArrow.name = upRightArrowName;
         upLeftArrow.name = upLeftArrowName;
@@ -110,6 +109,22 @@ public class GameController : MonoBehaviour {
         downArrow.name = downArrowName;
         downLeftArrow.name = downLeftArrowName;
         downRightArrow.name = downRightArrowName;
+    }
+
+    void Start()
+    {
+        CheckCorrectRowsAndColumns();
+        ModifyVariablesValues();
+        PrepareArrowsToUse();
+        CalculateNumberOfDivisions();
+        gridSize = CalculateGridSize();
+        ModifySizeAndMovePrefabGridSize();
+        CalculateBoardSizes();
+        ResizeBoard();
+        CreateAndArrangeGrids();
+        AddNumbersToButtons();
+        AddArrowsToButtons();
+        SetGameControllerReferenceOnButtons();
     }
 
     private void CheckCorrectRowsAndColumns()
@@ -126,20 +141,18 @@ public class GameController : MonoBehaviour {
         {
             throw new ArgumentException("There are more grids in column than grids in row! Grids in row: " + columns + ", grids in column: " + rows);
         }
-    }
-
-    void Start()
+    }   
+    
+    void SetGameControllerReferenceOnButtons()
     {
-        ModifyVariablesValues();
-        PrepareArrowsToUse();
-        CalculateNumberOfDivisions();
-        gridSize = CalculateGridSize();
-        ModifySizeAndMovePrefabGridSize();
-        CalculateBoardSizes();
-        ResizeBoard();
-        CreateAndArrangeGrids();
-        AddNumbersToButtons();
-        AddArrowsToButtons();
+        for (int x = 0; x < columns; x++)
+        {
+            for (int y = 0; y < rows; y++)
+            {
+                buttonTextArray[x, y].GetComponentInParent<GridSpace>().SetGameControllerReference(this);
+                imageArray[x, y].GetComponentInParent<GridSpace>().SetGameControllerReference(this);
+            }
+        }
     }
 
     private void ModifyVariablesValues()
