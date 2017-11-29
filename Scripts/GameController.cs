@@ -14,8 +14,8 @@ public class GameController : MonoBehaviour {
     public Sprite downArrow;
     public Sprite downRightArrow;
     public Sprite downLeftArrow;
-    private int columns = 5;
-    private int rows = 5;
+    private int columns = 3;
+    private int rows = 2;
     private Text[,] buttonTextArray;
     private Image[,] imageArray;
     private List<int> numbers;
@@ -53,6 +53,9 @@ public class GameController : MonoBehaviour {
     private int numberOfDivisionsInWidth;
     private int numberOfDivisionsInHeight;
     private int gridAssetFromDivisions;
+    private int textSize;
+    private int arrowSize;
+    private int arrowMove;
     
 
     //          BOARD
@@ -145,15 +148,27 @@ public class GameController : MonoBehaviour {
         if (columns == 2)
         {
             gridAssetFromDivisions = 20;
+            textSize = 90;
+            arrowSize = 80;
+            arrowMove = 70;
         } else if (columns == 3)
         {
             gridAssetFromDivisions = 14;
+            textSize = 70;
+            arrowSize = 40;
+            arrowMove = 45;
         } else if (columns == 4)
         {
             gridAssetFromDivisions = 7;
+            textSize = 60;
+            arrowSize = 35;
+            arrowMove = 40;
         } else if (columns == 5)
         {
             gridAssetFromDivisions = 1;
+            textSize = 45;
+            arrowSize = 30;
+            arrowMove = 30;
         } else
         {
             throw new Exception("Incorrect number of columns: " + columns);
@@ -226,6 +241,7 @@ public class GameController : MonoBehaviour {
                 int gridsAsset = gridSize + 2 * gridAssetFromDivisions + divisionLineWidth;
                 gridPrefabRectTransform.anchoredPosition = new Vector2((x * gridsAsset + gridsAsset/2) - (boardSizeWidth / 2), (y * gridsAsset + gridsAsset / 2) - (boardSizeHeight / 2));
                 buttonTextArray[x, y] = newSmoke.GetComponentInChildren<Text>();
+                buttonTextArray[x, y].fontSize = textSize;
                 imageArray[x, y] = newSmoke.GetComponentsInChildren<Image>()[1];
             }
         }
@@ -287,7 +303,7 @@ public class GameController : MonoBehaviour {
             {
                 int index = rand.Next(0, arrowsToUse.Count);
                 imageArray[i, j].sprite = arrowsToUse[index];
-                imageArray[i, j].rectTransform.sizeDelta = new Vector2(40, 40);
+                imageArray[i, j].rectTransform.sizeDelta = new Vector2(arrowSize, arrowSize);
                 SetArrowLocation(arrowsToUse[index], imageArray[i, j]);
                 arrowsToUse.RemoveAt(index);
             }
@@ -296,8 +312,8 @@ public class GameController : MonoBehaviour {
 
     void SetArrowLocation(Sprite arrow, Image image)
     {
-        int moveValue = 45;
-        int[] arrowTransition = ChangeLocation(arrow.name, moveValue);
+        int moveValue = 30;
+        int[] arrowTransition = ChangeLocation(arrow.name, arrowMove);
         image.rectTransform.anchoredPosition = new Vector2(arrowTransition[0], arrowTransition[1]);
     }
 
