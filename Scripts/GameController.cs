@@ -14,8 +14,8 @@ public class GameController : MonoBehaviour {
     public Sprite downArrow;
     public Sprite downRightArrow;
     public Sprite downLeftArrow;
-    private int columns = 3;
-    private int rows = 2;
+    private int columns = 4;
+    private int rows = 3;
     private Text[,] buttonTextArray;
     private Image[,] imageArray;
     private List<int> numbers;
@@ -68,29 +68,9 @@ public class GameController : MonoBehaviour {
 
     private void Awake()
     {
-        CheckCorrectRowsAndColumns();
         InstantiateObjects();
         InstantiateVariables();
         SetArrowsNames();
-        //SetGameControllerReferenceOnButtons();
-        //Change1DTo2DArray();
-        //AddNumbersToButtons();
-        //AddArrowsToButtons();
-    }
-
-    private void CheckCorrectRowsAndColumns()
-    {
-        if (1 >= columns || columns >= 6 || 1 >= rows || rows >= 6)
-        {
-            throw new ArgumentException("Incorrect number of grids! Grids in row: " + columns + ", grids in column: " + rows);
-        } else if (Math.Abs(rows - columns) > 1)
-        {
-            throw new ArgumentException("Too big difference between columns and rows! Grids in row: " + columns + ", grids in column: " + rows);
-        } else if(rows > columns)
-        {
-            throw new ArgumentException("There are more grids in column than grids in row! Grids in row: " + columns + ", grids in column: " + rows);
-        }
-
     }
 
     private void InstantiateObjects()
@@ -121,6 +101,7 @@ public class GameController : MonoBehaviour {
 
     private void SetArrowsNames()
     {
+        CheckCorrectRowsAndColumns();
         upArrow.name = upArrowName;
         upRightArrow.name = upRightArrowName;
         upLeftArrow.name = upLeftArrowName;
@@ -129,6 +110,22 @@ public class GameController : MonoBehaviour {
         downArrow.name = downArrowName;
         downLeftArrow.name = downLeftArrowName;
         downRightArrow.name = downRightArrowName;
+    }
+
+    private void CheckCorrectRowsAndColumns()
+    {
+        if (1 >= columns || columns >= 6 || 1 >= rows || rows >= 6)
+        {
+            throw new ArgumentException("Incorrect number of grids! Grids in row: " + columns + ", grids in column: " + rows);
+        }
+        else if (Math.Abs(rows - columns) > 1)
+        {
+            throw new ArgumentException("Too big difference between columns and rows! Grids in row: " + columns + ", grids in column: " + rows);
+        }
+        else if (rows > columns)
+        {
+            throw new ArgumentException("There are more grids in column than grids in row! Grids in row: " + columns + ", grids in column: " + rows);
+        }
     }
 
     void Start()
@@ -141,6 +138,8 @@ public class GameController : MonoBehaviour {
         CalculateBoardSizes();
         ResizeBoard();
         CreateAndArrangeGrids();
+        AddNumbersToButtons();
+        AddArrowsToButtons();
     }
 
     private void ModifyVariablesValues()
@@ -223,9 +222,7 @@ public class GameController : MonoBehaviour {
     {
         RectTransform boardRectTransform = boardPanel.GetComponent<RectTransform>();
         boardRectTransform.sizeDelta = new Vector2(boardSizeWidth, boardSizeHeight);
-        Debug.Log("H: " + boardSizeHeight + ", W: " + boardSizeWidth);
     }
-
 
     private void CreateAndArrangeGrids()
     {
@@ -245,38 +242,7 @@ public class GameController : MonoBehaviour {
                 imageArray[x, y] = newSmoke.GetComponentsInChildren<Image>()[1];
             }
         }
-        AddNumbersToButtons();
-        AddArrowsToButtons();
-
     }
-
-    //void SetGameControllerReferenceOnButtons()
-    //{
-    //    for (int i = 0; i < buttonTextList.Length; i++)
-    //    {
-    //        buttonTextList[i].GetComponentInParent<GridSpace>().SetGameControllerReference(this);
-    //        imageList[i].GetComponentInParent<GridSpace>().SetGameControllerReference(this);
-    //    }
-    //}
-
-    //void Change1DTo2DArray()
-    //{
-    //    Match1DElementTo2D(0, 0, 2);
-    //    Match1DElementTo2D(1, 1, 2);
-    //    Match1DElementTo2D(2, 2, 2);
-    //    Match1DElementTo2D(3, 0, 1);
-    //    Match1DElementTo2D(4, 1, 1);
-    //    Match1DElementTo2D(5, 2, 1);
-    //    Match1DElementTo2D(6, 0, 0);
-    //    Match1DElementTo2D(7, 1, 0);
-    //    Match1DElementTo2D(8, 2, 0);
-    //}
-
-    //void Match1DElementTo2D(int index, int x2D, int y2D)
-    //{
-    //    buttonTextArray[x2D, y2D] = buttonTextList[index];
-    //    imageArray[x2D, y2D] = imageList[index];
-    //}
 
     void AddNumbersToButtons()
     {
@@ -288,7 +254,7 @@ public class GameController : MonoBehaviour {
                 do
                 {
                     randomNumber = rand.Next(0, numbersLeft.Count);
-                } while (y == 0 && randomNumber < columns);
+                } while (y == rows && randomNumber <= columns);
                 buttonTextArray[x, y].text = numbersLeft[randomNumber].ToString();
                 numbersLeft.RemoveAt(randomNumber);
             }
@@ -312,7 +278,6 @@ public class GameController : MonoBehaviour {
 
     void SetArrowLocation(Sprite arrow, Image image)
     {
-        int moveValue = 30;
         int[] arrowTransition = ChangeLocation(arrow.name, arrowMove);
         image.rectTransform.anchoredPosition = new Vector2(arrowTransition[0], arrowTransition[1]);
     }
@@ -391,7 +356,7 @@ public class GameController : MonoBehaviour {
         ResetVariables();
         PrepareArrowsToUse();
         AddNumbersToButtons();
-        //AddArrowsToButtons();
+        AddArrowsToButtons();
         numberOfMoves += 5;
     }
 
