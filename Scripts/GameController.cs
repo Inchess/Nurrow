@@ -14,8 +14,8 @@ public class GameController : MonoBehaviour {
     public Sprite downArrow;
     public Sprite downRightArrow;
     public Sprite downLeftArrow;
-    private int columns = 5;
-    private int rows = 5;
+    private int columns = 4;
+    private int rows = 4;
     private Text[,] buttonTextArray;
     private Image[,] imageArray;
     private List<int> numbers;
@@ -129,7 +129,7 @@ public class GameController : MonoBehaviour {
 
     private void CheckCorrectRowsAndColumns()
     {
-        if (1 >= columns || columns >= 6 || 1 >= rows || rows >= 6)
+        if (1 >= columns || columns >= 5)
         {
             throw new ArgumentException("Incorrect number of grids! Grids in row: " + columns + ", grids in column: " + rows);
         }
@@ -175,12 +175,6 @@ public class GameController : MonoBehaviour {
             textSize = 60;
             arrowSize = 35;
             arrowMove = 40;
-        } else if (columns == 5)
-        {
-            gridAssetFromDivisions = 1;
-            textSize = 45;
-            arrowSize = 30;
-            arrowMove = 30;
         } else
         {
             throw new Exception("Incorrect number of columns: " + columns);
@@ -342,7 +336,7 @@ public class GameController : MonoBehaviour {
         {
             //LockButtons();
         }
-        if (buttonTextArray[0, 0].text == "1" && buttonTextArray[1, 0].text == "2" && buttonTextArray[2, 0].text == "3")
+        if (buttonTextArray[0, 3].text == "1" && buttonTextArray[1, 3].text == "2" && buttonTextArray[2, 3].text == "3")
         {
             //ChangeColorToGreen(buttonArray[0, 0]);
             //ChangeColorToGreen(buttonArray[1, 0]);
