@@ -14,8 +14,8 @@ public class GameController : MonoBehaviour {
     public Sprite downArrow;
     public Sprite downRightArrow;
     public Sprite downLeftArrow;
-    private int columns = 4;
-    private int rows = 3;
+    private int columns = 5;
+    private int rows = 5;
     private Text[,] buttonTextArray;
     private Image[,] imageArray;
     private List<int> numbers;
@@ -246,7 +246,7 @@ public class GameController : MonoBehaviour {
 
     void AddNumbersToButtons()
     {
-        for (int y = 0; y < rows; y++)
+        for (int y = (rows - 1); y >= 0; y--)
         {
             for (int x = 0; x < columns; x++)
             { 
@@ -254,7 +254,7 @@ public class GameController : MonoBehaviour {
                 do
                 {
                     randomNumber = rand.Next(0, numbersLeft.Count);
-                } while (y == rows && randomNumber <= columns);
+                } while (y == (rows - 1) && randomNumber < columns);
                 buttonTextArray[x, y].text = numbersLeft[randomNumber].ToString();
                 numbersLeft.RemoveAt(randomNumber);
             }
