@@ -334,6 +334,8 @@ public class GameController : MonoBehaviour {
     {
         imageArray[newPositionX, newPositionY].sprite = arrow;
         imageArray[clickedButtonX, clickedButtonY].sprite = newImageArrow;
+        SetArrowLocation(arrow, imageArray[newPositionX, newPositionY]);
+        SetArrowLocation(newImageArrow, imageArray[clickedButtonX, clickedButtonY]);
     }
 
     void CalculateNewLocation()
