@@ -38,6 +38,7 @@ public class GameController : MonoBehaviour {
     private int newPositionX;
     private int newPositionY;
     private string newButtonNumber;
+    private Sprite newImageArrow;
     private int numberOfMoves = 20;
     public GameObject gridSpacePrefab;
     public GameObject canvasObject;
@@ -298,8 +299,10 @@ public class GameController : MonoBehaviour {
     public void MoveNumbersOnClick(Text buttonText, Button button)
     {
         string number = button.GetComponentInChildren<Text>().text;
+        Sprite arrow = button.GetComponentsInChildren<Image>()[1].sprite;
         FindButtonIndexes(number);
         ChangeButtonsPlaces(number);
+        ChangeArrowsPlaces(arrow);
         CheckIfGameFinished(button);
         numberOfMoves--;
     }
@@ -327,6 +330,12 @@ public class GameController : MonoBehaviour {
         buttonTextArray[clickedButtonX, clickedButtonY].text = newButtonNumber;
     }
 
+    void ChangeArrowsPlaces(Sprite arrow)
+    {
+        imageArray[newPositionX, newPositionY].sprite = arrow;
+        imageArray[clickedButtonX, clickedButtonY].sprite = newImageArrow;
+    }
+
     void CalculateNewLocation()
     {
         int moveValue = 1;
@@ -334,6 +343,7 @@ public class GameController : MonoBehaviour {
         newPositionX = (clickedButtonX + arrowTransition[0] + columns) % columns;
         newPositionY = (clickedButtonY + arrowTransition[1] + columns) % columns;
         newButtonNumber = buttonTextArray[newPositionX, newPositionY].text;
+        newImageArrow = imageArray[newPositionX, newPositionY].sprite;
     }
 
     void CheckIfGameFinished(Button button)
