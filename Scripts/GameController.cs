@@ -57,6 +57,9 @@ public class GameController : MonoBehaviour {
     private int textSize;
     private int arrowSize;
     private int arrowMove;
+    public Text timerText;
+    public Text numberOfMovesText;
+    private float targetTime;
     
 
     //          BOARD
@@ -114,6 +117,8 @@ public class GameController : MonoBehaviour {
 
     void Start()
     {
+        targetTime = (rows + columns) * 5 + 10;
+        numberOfMovesText.text = numberOfMoves.ToString();
         CheckCorrectRowsAndColumns();
         ModifyVariablesValues();
         PrepareArrowsToUse();
@@ -126,6 +131,12 @@ public class GameController : MonoBehaviour {
         AddNumbersToButtons();
         AddArrowsToButtons();
         SetGameControllerReferenceOnButtons();
+    }
+
+    private void Update()
+    {
+        targetTime -= Time.deltaTime;
+        timerText.text = Math.Round(targetTime, 1).ToString();
     }
 
     private void CheckCorrectRowsAndColumns()
@@ -304,7 +315,6 @@ public class GameController : MonoBehaviour {
         ChangeButtonsPlaces(number);
         ChangeArrowsPlaces(arrow);
         CheckIfGameFinished(button);
-        numberOfMoves--;
     }
 
     void FindButtonIndexes(string number)
@@ -363,7 +373,8 @@ public class GameController : MonoBehaviour {
         }
         else
         {
-            Debug.Log("Moves left: " + numberOfMoves);
+            numberOfMoves--;
+            numberOfMovesText.text = numberOfMoves.ToString();
         }
     }
 
