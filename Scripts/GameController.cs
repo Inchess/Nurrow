@@ -14,8 +14,8 @@ public class GameController : MonoBehaviour {
     public Sprite downArrow;
     public Sprite downRightArrow;
     public Sprite downLeftArrow;
-    private int columns = 4;
-    private int rows = 4;
+    private int columns = 3;
+    private int rows = 3;
     private Text[,] buttonTextArray;
     private Image[,] imageArray;
     private List<int> numbers;
@@ -59,6 +59,8 @@ public class GameController : MonoBehaviour {
     private int arrowMove;
     public Text timerText;
     public Text numberOfMovesText;
+    public Text pointsText;
+    private int points;
     private float targetTime;
     
 
@@ -117,8 +119,9 @@ public class GameController : MonoBehaviour {
 
     void Start()
     {
-        targetTime = (rows + columns) * 5 + 10;
+        targetTime = (rows + columns) * 50 + 10;
         numberOfMovesText.text = numberOfMoves.ToString();
+
         CheckCorrectRowsAndColumns();
         ModifyVariablesValues();
         PrepareArrowsToUse();
@@ -369,6 +372,7 @@ public class GameController : MonoBehaviour {
             //ChangeColorToGreen(buttonArray[0, 0]);
             //ChangeColorToGreen(buttonArray[1, 0]);
             //ChangeColorToGreen(buttonArray[2, 0]);
+            UpdatePoints();
             RestartBoard();
         }
         else
@@ -376,6 +380,14 @@ public class GameController : MonoBehaviour {
             numberOfMoves--;
             numberOfMovesText.text = numberOfMoves.ToString();
         }
+    }
+
+    void UpdatePoints()
+    {
+        int pointsInThisRound = rows * columns * (int)targetTime;
+        Debug.Log("Time left: "+ targetTime + ", Points scored: " + pointsInThisRound);
+        points += pointsInThisRound;
+        pointsText.text = points.ToString();
     }
 
     void ChangeColorToGreen(Text text)
