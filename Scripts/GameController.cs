@@ -39,7 +39,7 @@ public class GameController : MonoBehaviour {
     private int newPositionY;
     private string newButtonNumber;
     private Sprite newImageArrow;
-    private int numberOfMoves = 20;
+    private int numberOfMoves = 120;
     public GameObject gridSpacePrefab;
     public GameObject canvasObject;
     public GameObject boardPanel;
@@ -132,6 +132,7 @@ public class GameController : MonoBehaviour {
         ResizeBoard();
         CreateAndArrangeGrids();
         AddNumbersToButtons();
+        ColorCorrectNumbersOnButtons();
         AddArrowsToButtons();
         SetGameControllerReferenceOnButtons();
     }
@@ -363,15 +364,13 @@ public class GameController : MonoBehaviour {
 
     void CheckIfGameFinished(Button button)
     {
+        ColorCorrectNumbersOnButtons();
         if (numberOfMoves <= 0)
         {
             //LockButtons();
         }
-        if (buttonTextArray[0, 2].text == "1" && buttonTextArray[1, 2].text == "2" && buttonTextArray[2, 2].text == "3")
+        if (buttonTextArray[0, rows-1].text == "1" && buttonTextArray[1, rows - 1].text == "2" && buttonTextArray[2, rows - 1].text == "3")
         {
-            //ChangeColorToGreen(buttonArray[0, 0]);
-            //ChangeColorToGreen(buttonArray[1, 0]);
-            //ChangeColorToGreen(buttonArray[2, 0]);
             UpdatePoints();
             RestartBoard();
         }
@@ -379,6 +378,24 @@ public class GameController : MonoBehaviour {
         {
             numberOfMoves--;
             numberOfMovesText.text = numberOfMoves.ToString();
+        }
+    }
+
+    void ColorCorrectNumbersOnButtons()
+    {
+        for (int x = 0; x < columns; x++)
+        {
+            for (int y = 0; y < rows; y++)
+            {
+                int correctNumberOnField = (x + 1) + Math.Abs(y - (rows - 1)) * columns;
+                if (buttonTextArray[x, y].text == correctNumberOnField.ToString())
+                {
+                    ChangeColor(buttonTextArray[x, y], Color.green);
+                } else
+                {
+                    ChangeColor(buttonTextArray[x, y], Color.white);
+                }
+            }
         }
     }
 
@@ -390,12 +407,12 @@ public class GameController : MonoBehaviour {
         pointsText.text = points.ToString();
     }
 
-    void ChangeColorToGreen(Text text)
+    void ChangeColor(Text text, Color color)
     {
         Button b = text.GetComponentInParent<Button>();
         ColorBlock cb = b.colors;
-        cb.normalColor = Color.green;
-        cb.highlightedColor = Color.green;
+        cb.normalColor = color;
+        cb.highlightedColor = color;
         b.colors = cb;
     }
 
@@ -405,6 +422,7 @@ public class GameController : MonoBehaviour {
         PrepareArrowsToUse();
         AddNumbersToButtons();
         AddArrowsToButtons();
+        ColorCorrectNumbersOnButtons();
         numberOfMoves += 5;
     }
 
