@@ -70,6 +70,7 @@ public class GameController : MonoBehaviour {
     public Text pointsText;
     private int points;
     private float targetTime;
+    private List<GameObject> gridsList;
     
 
     //          BOARD
@@ -90,25 +91,27 @@ public class GameController : MonoBehaviour {
     private void InstantiateObjects()
     {
         rand = new System.Random();
+        arrowsList = new List<Sprite>(new Sprite[] { upArrow, upLeftArrow, upRightArrow, leftArrow, rightArrow, downArrow, downLeftArrow, downRightArrow });
+        arrowsListCopy = new List<Sprite>(new Sprite[] { upArrow, upLeftArrow, upRightArrow, leftArrow, rightArrow, downArrow, downLeftArrow, downRightArrow });
+        arrowsUpDownLeftRight = new List<Sprite>(new Sprite[] { upArrow, leftArrow, rightArrow, downArrow });
+        arrowsDiagonal = new List<Sprite>(new Sprite[] { upLeftArrow, upRightArrow, downLeftArrow, downRightArrow });
+        numbersLeft = new List<int>();
+        numbers = new List<int>();
+        arrowsToUse = new List<Sprite>();
+        gridsList = new List<GameObject>();
     }
 
     private void InstantiateVariables()
     {
         buttonTextArray = new Text[columns, rows];
         imageArray = new Image[columns, rows];
-        numbers = new List<int>();
-        numbersLeft = new List<int>();
         AddNumbersToList(numbers);
         AddNumbersToList(numbersLeft);
-        arrowsList = new List<Sprite>(new Sprite[] { upArrow, upLeftArrow, upRightArrow, leftArrow, rightArrow, downArrow, downLeftArrow, downRightArrow });
-        arrowsListCopy = new List<Sprite>(new Sprite[] { upArrow, upLeftArrow, upRightArrow, leftArrow, rightArrow, downArrow, downLeftArrow, downRightArrow });
-        arrowsUpDownLeftRight = new List<Sprite>(new Sprite[] { upArrow, leftArrow, rightArrow, downArrow });
-        arrowsDiagonal = new List<Sprite>(new Sprite[] { upLeftArrow, upRightArrow, downLeftArrow, downRightArrow });
-        arrowsToUse = new List<Sprite>();
     }
 
     private void AddNumbersToList(List<int> list)
     {
+        list.Clear();
         for (int i = 1; i <= columns * rows; i++)
         {
             list.Add(i);
@@ -298,6 +301,7 @@ public class GameController : MonoBehaviour {
                 buttonTextArray[x, y] = newSmoke.GetComponentInChildren<Text>();
                 buttonTextArray[x, y].fontSize = textSize;
                 imageArray[x, y] = newSmoke.GetComponentsInChildren<Image>()[1];
+                gridsList.Add(newSmoke);
             }
         }
     }
@@ -386,7 +390,7 @@ public class GameController : MonoBehaviour {
         int moveValue = 1;
         int[] arrowTransition = ChangeLocation(clickedButtonArrowName, moveValue);
         newPositionX = (clickedButtonX + arrowTransition[0] + columns) % columns;
-        newPositionY = (clickedButtonY + arrowTransition[1] + columns) % columns;
+        newPositionY = (clickedButtonY + arrowTransition[1] + rows) % rows;
         newButtonNumber = buttonTextArray[newPositionX, newPositionY].text;
         newImageArrow = imageArray[newPositionX, newPositionY].sprite;
     }
@@ -400,6 +404,7 @@ public class GameController : MonoBehaviour {
         }
         else if (columns == 2 && buttonTextArray[0, 1].text == "1" && buttonTextArray[1, 1].text == "2" && buttonTextArray[0, 0].text == "3")
         {
+            points += 300;
             UpdatePoints();
             RestartBoard();
         }
@@ -460,6 +465,7 @@ public class GameController : MonoBehaviour {
         ColorCorrectNumbersOnButtons();
         numberOfMoves += 5;
         SetTime();
+        DestroyGrids();
         ChangeBoardSize();
     }
 
@@ -472,7 +478,6 @@ public class GameController : MonoBehaviour {
         numbersLeft = new List<int>();
         AddNumbersToList(numbers);
         AddNumbersToList(numbersLeft);
-        //numbersLeft = new List<int> (new int[] { 1, 2, 3, 4, 5, 6, 7, 8, 9 });
 
     }
 
@@ -505,12 +510,22 @@ public class GameController : MonoBehaviour {
         {
             SetColumnsAndRows(5, 5);
         }
+        Start();
+    }
+
+    void DestroyGrids()
+    {
+        for (int i = 0; i < gridsList.Count; i++)
+        {
+            Destroy(gridsList[i]);
+        }
     }
 
     void SetColumnsAndRows(int columns, int rows)
     {
         this.columns = columns;
         this.rows = rows;
+        InstantiateVariables();
     }
 
     //void LockButtons()
