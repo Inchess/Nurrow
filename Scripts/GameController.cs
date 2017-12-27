@@ -14,8 +14,14 @@ public class GameController : MonoBehaviour {
     public Sprite downArrow;
     public Sprite downRightArrow;
     public Sprite downLeftArrow;
-    private int columns = 3;
-    private int rows = 3;
+    private int columns = 2;
+    private int rows = 2;
+    private int board3x2limit = 200;
+    private int board3x3limit = 600;
+    private int board4x3limit = 1200;
+    private int board4x4limit = 2000;
+    private int board5x4limit = 3200;
+    private int board5x5limit = 5000;
     private Text[,] buttonTextArray;
     private Image[,] imageArray;
     private List<int> numbers;
@@ -24,6 +30,8 @@ public class GameController : MonoBehaviour {
     private List<Sprite> arrowsList;
     private List<Sprite> arrowsListCopy;
     private List<Sprite> arrowsToUse;
+    private List<Sprite> arrowsUpDownLeftRight;
+    private List<Sprite> arrowsDiagonal;
     string upArrowName = "Up Arrow";
     string upRightArrowName = "Up Right Arrow";
     string upLeftArrowName = "Up Left Arrow";
@@ -94,6 +102,8 @@ public class GameController : MonoBehaviour {
         AddNumbersToList(numbersLeft);
         arrowsList = new List<Sprite>(new Sprite[] { upArrow, upLeftArrow, upRightArrow, leftArrow, rightArrow, downArrow, downLeftArrow, downRightArrow });
         arrowsListCopy = new List<Sprite>(new Sprite[] { upArrow, upLeftArrow, upRightArrow, leftArrow, rightArrow, downArrow, downLeftArrow, downRightArrow });
+        arrowsUpDownLeftRight = new List<Sprite>(new Sprite[] { upArrow, leftArrow, rightArrow, downArrow });
+        arrowsDiagonal = new List<Sprite>(new Sprite[] { upLeftArrow, upRightArrow, downLeftArrow, downRightArrow });
         arrowsToUse = new List<Sprite>();
     }
 
@@ -119,7 +129,8 @@ public class GameController : MonoBehaviour {
 
     void Start()
     {
-        targetTime = (rows + columns) * 50 + 10;
+
+        SetTime();
         numberOfMovesText.text = numberOfMoves.ToString();
 
         CheckCorrectRowsAndColumns();
@@ -137,10 +148,15 @@ public class GameController : MonoBehaviour {
         SetGameControllerReferenceOnButtons();
     }
 
+    void SetTime()
+    {
+        targetTime = 20 + (rows + columns - 4) * 10;
+    }
+
     private void Update()
     {
         targetTime -= Time.deltaTime;
-        timerText.text = Math.Round(targetTime, 1).ToString();
+        timerText.text = Math.Round(targetTime, 0).ToString();
     }
 
     private void CheckCorrectRowsAndColumns()
@@ -214,9 +230,22 @@ public class GameController : MonoBehaviour {
         }
         for (int i = 0; i < extraArrows; i++)
         {
-            int randomNumber = rand.Next(0, arrowsListCopy.Count);
-            arrowsToUse.Add(arrowsListCopy[randomNumber]);
-            arrowsListCopy.RemoveAt(randomNumber);
+            if (columns == 2 && i == 2)
+            {
+                int randomNum = rand.Next(0, arrowsUpDownLeftRight.Count);
+                arrowsToUse.Add(arrowsUpDownLeftRight[randomNum]);
+            }
+            else if (columns == 2 && i == 3)
+            {
+                int randomNum = rand.Next(0, arrowsDiagonal.Count);
+                arrowsToUse.Add(arrowsDiagonal[randomNum]);
+            }
+            else
+            {
+                int randomNumber = rand.Next(0, arrowsListCopy.Count);
+                arrowsToUse.Add(arrowsListCopy[randomNumber]);
+                arrowsListCopy.RemoveAt(randomNumber);
+            }
         }
     }
 
@@ -369,7 +398,13 @@ public class GameController : MonoBehaviour {
         {
             //LockButtons();
         }
-        if (buttonTextArray[0, rows-1].text == "1" && buttonTextArray[1, rows - 1].text == "2" && buttonTextArray[2, rows - 1].text == "3")
+        else if (columns == 2 && buttonTextArray[0, 1].text == "1" && buttonTextArray[1, 1].text == "2" && buttonTextArray[0, 0].text == "3")
+        {
+            UpdatePoints();
+            RestartBoard();
+        }
+
+        else if (columns > 2 && buttonTextArray[0, rows-1].text == "1" && buttonTextArray[1, rows - 1].text == "2" && buttonTextArray[2, rows - 1].text == "3")
         {
             UpdatePoints();
             RestartBoard();
@@ -415,7 +450,7 @@ public class GameController : MonoBehaviour {
         cb.highlightedColor = color;
         b.colors = cb;
     }
-
+    
     void RestartBoard()
     {
         ResetVariables();
@@ -424,6 +459,8 @@ public class GameController : MonoBehaviour {
         AddArrowsToButtons();
         ColorCorrectNumbersOnButtons();
         numberOfMoves += 5;
+        SetTime();
+        ChangeBoardSize();
     }
 
     void ResetVariables()
@@ -432,8 +469,48 @@ public class GameController : MonoBehaviour {
         arrowsListCopy.Clear();
         arrowsListCopy = new List<Sprite>(new Sprite[] { upArrow, upLeftArrow, upRightArrow, leftArrow, rightArrow, downArrow, downLeftArrow, downRightArrow });
         numbersLeft.Clear();
-        numbersLeft = new List<int> (new int[] { 1, 2, 3, 4, 5, 6, 7, 8, 9 });
+        numbersLeft = new List<int>();
+        AddNumbersToList(numbers);
+        AddNumbersToList(numbersLeft);
+        //numbersLeft = new List<int> (new int[] { 1, 2, 3, 4, 5, 6, 7, 8, 9 });
 
+    }
+
+    void ChangeBoardSize()
+    {
+        if (points <= board3x2limit)
+        {
+            SetColumnsAndRows(2, 2);
+        } else if (board3x2limit < points && points <= board3x3limit)
+        {
+            SetColumnsAndRows(3, 2);
+        }
+        else if (board3x3limit < points && points <= board4x3limit)
+        {
+            SetColumnsAndRows(3, 3);
+        }
+        else if (board4x3limit < points && points <= board4x4limit)
+        {
+            SetColumnsAndRows(4, 3);
+        }
+        else if (board4x4limit < points && points <= board5x4limit)
+        {
+            SetColumnsAndRows(4, 4);
+        }
+        else if (board5x4limit < points && points <= board5x5limit)
+        {
+            SetColumnsAndRows(5, 4);
+        }
+        else if (board5x5limit < points)
+        {
+            SetColumnsAndRows(5, 5);
+        }
+    }
+
+    void SetColumnsAndRows(int columns, int rows)
+    {
+        this.columns = columns;
+        this.rows = rows;
     }
 
     //void LockButtons()
