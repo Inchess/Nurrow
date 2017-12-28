@@ -71,21 +71,18 @@ public class GameController : MonoBehaviour {
     private int points;
     private float targetTime;
     private List<GameObject> gridsList;
-    
-
-    //          BOARD
-    //  \x   0   1   2
-    //  y    _________
-    //  2   |7   8   9|
-    //  1   |6   5   4|
-    //  0   |1   2   3|
-    //      |_________|
 
     private void Awake()
     {
         InstantiateObjects();
         InstantiateVariables();
         SetArrowsNames();
+    }
+
+    private void Update()
+    {
+        targetTime -= Time.deltaTime;
+        timerText.text = Math.Round(targetTime, 0).ToString();
     }
 
     private void InstantiateObjects()
@@ -154,12 +151,6 @@ public class GameController : MonoBehaviour {
     void SetTime()
     {
         targetTime = 20 + (rows + columns - 4) * 10;
-    }
-
-    private void Update()
-    {
-        targetTime -= Time.deltaTime;
-        timerText.text = Math.Round(targetTime, 0).ToString();
     }
 
     private void CheckCorrectRowsAndColumns()
