@@ -74,9 +74,9 @@ public class GameController : MonoBehaviour {
 
     private void Awake()
     {
-        InstantiateObjects();
-        InstantiateVariables();
-        SetArrowsNames();
+        BeforeWholeGame();
+        BeforeNewLevel();
+        BeforeNewBoard();
     }
 
     private void Update()
@@ -85,17 +85,48 @@ public class GameController : MonoBehaviour {
         timerText.text = Math.Round(targetTime, 0).ToString();
     }
 
+    void BeforeWholeGame()
+    {
+        InstantiateObjects();
+        InstantiateArrowsLists();
+        InstantiateOtherLists();
+        SetArrowsNames();
+    }
+
+    void BeforeNewLevel()
+    {
+        InstantiateVariables();
+    }
+
+    void BeforeNewBoard()
+    {
+        InstantiateArrowsCopy();
+        SetTime();
+    }
+
     private void InstantiateObjects()
     {
         rand = new System.Random();
+    }
+
+    void InstantiateArrowsLists()
+    {
         arrowsList = new List<Sprite>(new Sprite[] { upArrow, upLeftArrow, upRightArrow, leftArrow, rightArrow, downArrow, downLeftArrow, downRightArrow });
-        arrowsListCopy = new List<Sprite>(new Sprite[] { upArrow, upLeftArrow, upRightArrow, leftArrow, rightArrow, downArrow, downLeftArrow, downRightArrow });
         arrowsUpDownLeftRight = new List<Sprite>(new Sprite[] { upArrow, leftArrow, rightArrow, downArrow });
         arrowsDiagonal = new List<Sprite>(new Sprite[] { upLeftArrow, upRightArrow, downLeftArrow, downRightArrow });
+        arrowsToUse = new List<Sprite>();
+    }
+
+    void InstantiateOtherLists()
+    {
         numbersLeft = new List<int>();
         numbers = new List<int>();
-        arrowsToUse = new List<Sprite>();
         gridsList = new List<GameObject>();
+    }
+
+    void InstantiateArrowsCopy()
+    {
+        arrowsListCopy = new List<Sprite>(new Sprite[] { upArrow, upLeftArrow, upRightArrow, leftArrow, rightArrow, downArrow, downLeftArrow, downRightArrow });
     }
 
     private void InstantiateVariables()
@@ -129,8 +160,6 @@ public class GameController : MonoBehaviour {
 
     void Start()
     {
-
-        SetTime();
         numberOfMovesText.text = numberOfMoves.ToString();
 
         CheckCorrectRowsAndColumns();
