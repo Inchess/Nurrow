@@ -111,6 +111,11 @@ public class GameController : MonoBehaviour {
         CheckCorrectRowsAndColumns();
         PrepareArrowsToUse();
         ModifySizeAndMovePrefabGridSize();
+        CreateAndArrangeGrids();
+        AddNumbersToButtons();
+        ColorCorrectNumbersOnButtons();
+        AddArrowsToButtons();
+        SetGameControllerReferenceOnButtons();
     }
 
     private void InstantiateObjects()
@@ -165,16 +170,6 @@ public class GameController : MonoBehaviour {
         downArrow.name = downArrowName;
         downLeftArrow.name = downLeftArrowName;
         downRightArrow.name = downRightArrowName;
-    }
-
-    void Start()
-    {
-
-        CreateAndArrangeGrids();
-        AddNumbersToButtons();
-        ColorCorrectNumbersOnButtons();
-        AddArrowsToButtons();
-        SetGameControllerReferenceOnButtons();
     }
 
     void SetTime()
@@ -426,13 +421,13 @@ public class GameController : MonoBehaviour {
         {
             points += 300;
             UpdatePoints();
-            RestartBoard();
+            AfterEachBoard();
         }
 
         else if (columns > 2 && buttonTextArray[0, rows-1].text == "1" && buttonTextArray[1, rows - 1].text == "2" && buttonTextArray[2, rows - 1].text == "3")
         {
             UpdatePoints();
-            RestartBoard();
+            AfterEachBoard();
         }
         else
         {
@@ -475,33 +470,19 @@ public class GameController : MonoBehaviour {
         cb.highlightedColor = color;
         b.colors = cb;
     }
-    
-    void RestartBoard()
-    {
-        ResetVariables();
-        PrepareArrowsToUse();
-        AddNumbersToButtons();
-        AddArrowsToButtons();
-        ColorCorrectNumbersOnButtons();
-        numberOfMoves += 5;
-        SetTime();
-        DestroyGrids();
-        ChangeBoardSize();
-    }
 
-    void ResetVariables()
+    void AfterEachBoard()
     {
+        DestroyGrids();
         arrowsToUse.Clear();
         arrowsListCopy.Clear();
-        arrowsListCopy = new List<Sprite>(new Sprite[] { upArrow, upLeftArrow, upRightArrow, leftArrow, rightArrow, downArrow, downLeftArrow, downRightArrow });
         numbersLeft.Clear();
-        numbersLeft = new List<int>();
-        AddNumbersToList(numbers);
-        AddNumbersToList(numbersLeft);
-
+        numberOfMoves += 5;
+        CheckIfNewLevel();
+        BeforeNewBoard();
     }
 
-    void ChangeBoardSize()
+    void CheckIfNewLevel()
     {
         if (points <= board3x2limit)
         {
@@ -530,7 +511,6 @@ public class GameController : MonoBehaviour {
         {
             SetColumnsAndRows(5, 5);
         }
-        Start();
     }
 
     void DestroyGrids()
@@ -545,7 +525,7 @@ public class GameController : MonoBehaviour {
     {
         this.columns = columns;
         this.rows = rows;
-        InstantiateVariables();
+        BeforeNewLevel();
     }
 
     //void LockButtons()
