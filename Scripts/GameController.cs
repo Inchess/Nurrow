@@ -91,17 +91,26 @@ public class GameController : MonoBehaviour {
         InstantiateArrowsLists();
         InstantiateOtherLists();
         SetArrowsNames();
+        numberOfMovesText.text = numberOfMoves.ToString();
     }
 
     void BeforeNewLevel()
     {
         InstantiateVariables();
+        ModifyVariablesValues();
+        CalculateNumberOfDivisions();
+        gridSize = CalculateGridSize();
+        CalculateBoardSizes();
+        ResizeBoard();
     }
 
     void BeforeNewBoard()
     {
         InstantiateArrowsCopy();
         SetTime();
+        CheckCorrectRowsAndColumns();
+        PrepareArrowsToUse();
+        ModifySizeAndMovePrefabGridSize();
     }
 
     private void InstantiateObjects()
@@ -160,16 +169,7 @@ public class GameController : MonoBehaviour {
 
     void Start()
     {
-        numberOfMovesText.text = numberOfMoves.ToString();
 
-        CheckCorrectRowsAndColumns();
-        ModifyVariablesValues();
-        PrepareArrowsToUse();
-        CalculateNumberOfDivisions();
-        gridSize = CalculateGridSize();
-        ModifySizeAndMovePrefabGridSize();
-        CalculateBoardSizes();
-        ResizeBoard();
         CreateAndArrangeGrids();
         AddNumbersToButtons();
         ColorCorrectNumbersOnButtons();
