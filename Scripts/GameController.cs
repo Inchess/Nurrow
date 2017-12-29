@@ -81,8 +81,11 @@ public class GameController : MonoBehaviour {
 
     private void Update()
     {
-        targetTime -= Time.deltaTime;
-        timerText.text = Math.Round(targetTime, 0).ToString();
+        if (targetTime > 0)
+        {
+            targetTime -= Time.deltaTime;
+            timerText.text = Math.Round(targetTime, 0).ToString();
+        }
     }
 
     void BeforeWholeGame()
@@ -419,7 +422,6 @@ public class GameController : MonoBehaviour {
         }
         else if (columns == 2 && buttonTextArray[0, 1].text == "1" && buttonTextArray[1, 1].text == "2" && buttonTextArray[0, 0].text == "3")
         {
-            points += 300;
             UpdatePoints();
             AfterEachBoard();
         }
