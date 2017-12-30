@@ -14,7 +14,7 @@ public class GameController : MonoBehaviour {
     public Sprite downArrow;
     public Sprite downRightArrow;
     public Sprite downLeftArrow;
-    private int columns = 2;
+    private int columns = 3;
     private int rows = 2;
     private int board3x2limit = 200;
     private int board3x3limit = 600;
@@ -68,9 +68,15 @@ public class GameController : MonoBehaviour {
     public Text timerText;
     public Text numberOfMovesText;
     public Text pointsText;
+    public Text pointsForRoundText;
+    public GameObject pointsForRoundPanel;
     private int points;
     private float targetTime;
     private List<GameObject> gridsList;
+    float timer = 0;
+    float timeToWait = 20000.1f;
+    bool checkingTime = true;
+    bool timerDone;
 
     private void Awake()
     {
@@ -119,6 +125,7 @@ public class GameController : MonoBehaviour {
         ColorCorrectNumbersOnButtons();
         AddArrowsToButtons();
         SetGameControllerReferenceOnButtons();
+        HidePointsForRound();
     }
 
     private void InstantiateObjects()
@@ -418,18 +425,24 @@ public class GameController : MonoBehaviour {
         ColorCorrectNumbersOnButtons();
         if (numberOfMoves <= 0)
         {
-            //LockButtons();
+            LockButtons();
         }
         else if (columns == 2 && buttonTextArray[0, 1].text == "1" && buttonTextArray[1, 1].text == "2" && buttonTextArray[0, 0].text == "3")
         {
             UpdatePoints();
-            AfterEachBoard();
+            LockButtons();
+            ColorCorrectNumbersDisabledColor();
+            ShowPointsForRound();
+            //AfterEachBoard();
         }
 
         else if (columns > 2 && buttonTextArray[0, rows-1].text == "1" && buttonTextArray[1, rows - 1].text == "2" && buttonTextArray[2, rows - 1].text == "3")
         {
             UpdatePoints();
-            AfterEachBoard();
+            LockButtons();
+            ColorCorrectNumbersDisabledColor();
+            ShowPointsForRound();
+            //AfterEachBoard();
         }
         else
         {
@@ -456,6 +469,29 @@ public class GameController : MonoBehaviour {
         }
     }
 
+    void ColorCorrectNumbersDisabledColor()
+    {
+        for (int x = 0; x < columns; x++)
+        {
+            for (int y = 0; y < rows; y++)
+            {
+                int correctNumberOnField = (x + 1) + Math.Abs(y - (rows - 1)) * columns;
+                if (buttonTextArray[x, y].text == correctNumberOnField.ToString())
+                {
+                    Button b = buttonTextArray[x, y].GetComponentInParent<Button>();
+                    ColorBlock cb = b.colors;
+                    cb.disabledColor = Color.green;
+                    b.colors = cb;
+                }
+            }
+        }
+    }
+
+    void HidePointsForRound()
+    {
+        pointsForRoundPanel.SetActive(false);
+    }
+
     void UpdatePoints()
     {
         int pointsInThisRound = rows * columns * (int)targetTime;
@@ -475,6 +511,7 @@ public class GameController : MonoBehaviour {
 
     void AfterEachBoard()
     {
+        ShowPointsForRound();
         DestroyGrids();
         arrowsToUse.Clear();
         arrowsListCopy.Clear();
@@ -482,6 +519,13 @@ public class GameController : MonoBehaviour {
         numberOfMoves += 5;
         CheckIfNewLevel();
         BeforeNewBoard();
+    }
+
+    void ShowPointsForRound()
+    {
+        pointsForRoundPanel.SetActive(true);
+        pointsForRoundPanel.transform.SetAsLastSibling();
+        pointsForRoundText.text = points.ToString();
     }
 
     void CheckIfNewLevel()
@@ -530,13 +574,16 @@ public class GameController : MonoBehaviour {
         BeforeNewLevel();
     }
 
-    //void LockButtons()
-    //{
-    //    for (int i = 0; i < buttonTextList.Length; i++)
-    //    {
-    //        buttonTextList[i].GetComponentInParent<Button>().interactable = false;
-    //    }
-    //}
+    void LockButtons()
+    {
+        for (int i = 0; i < columns; i++)
+        {
+            for (int j = 0; j < rows; j++)
+            {
+                buttonTextArray[i, j].GetComponentInParent<Button>().interactable = false;
+            }
+        }
+    }
 
     int[] ChangeLocation(string arrowName, int valueMove)
     {
