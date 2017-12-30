@@ -14,14 +14,14 @@ public class GameController : MonoBehaviour {
     public Sprite downArrow;
     public Sprite downRightArrow;
     public Sprite downLeftArrow;
-    private int columns = 5;
-    private int rows = 4;
-    private int board3x2limit = 200;
-    private int board3x3limit = 600;
-    private int board4x3limit = 1200;
-    private int board4x4limit = 2000;
-    private int board5x4limit = 3200;
-    private int board5x5limit = 5000;
+    private int columns = 2;
+    private int rows = 2;
+    private int board3x2limit = 250;
+    private int board3x3limit = 800;
+    private int board4x3limit = 2000;
+    private int board4x4limit = 5000;
+    private int board5x4limit = 10000;
+    private int board5x5limit = 20000;
     private Text[,] buttonTextArray;
     private Image[,] imageArray;
     private List<int> numbers;
@@ -70,10 +70,13 @@ public class GameController : MonoBehaviour {
     public Text pointsText;
     public Text pointsForRoundText;
     public GameObject pointsForRoundPanel;
+    public GameObject restartGameButton;
     private int points;
     private float targetTime;
     private List<GameObject> gridsList;
     private bool stillPlaying = true;
+    private int pointsInThisRound;
+
 
     private void Awake()
     {
@@ -126,6 +129,7 @@ public class GameController : MonoBehaviour {
         AddArrowsToButtons();
         SetGameControllerReferenceOnButtons();
         HidePointsForRound();
+        HideButtonToRestartGame();
     }
 
     private void InstantiateObjects()
@@ -429,28 +433,28 @@ public class GameController : MonoBehaviour {
         }
         else if (columns == 2 && buttonTextArray[0, 1].text == "1" && buttonTextArray[1, 1].text == "2" && buttonTextArray[0, 0].text == "3")
         {
-            UpdatePoints();
-            LockButtons();
-            ColorCorrectNumbersDisabledColor();
-            ShowPointsForRound();
-            StopTimer();
-            //AfterEachBoard();
+            StopGame();
         }
 
         else if (columns > 2 && buttonTextArray[0, rows-1].text == "1" && buttonTextArray[1, rows - 1].text == "2" && buttonTextArray[2, rows - 1].text == "3")
         {
-            UpdatePoints();
-            LockButtons();
-            ColorCorrectNumbersDisabledColor();
-            ShowPointsForRound();
-            StopTimer();
-            //AfterEachBoard();
+            StopGame();
         }
         else
         {
             numberOfMoves--;
             numberOfMovesText.text = numberOfMoves.ToString();
         }
+    }
+
+    void StopGame()
+    {
+        UpdatePoints();
+        LockButtons();
+        ColorCorrectNumbersDisabledColor();
+        ShowPointsForRound();
+        ShowButtonToRestartGame();
+        StopTimer();
     }
 
     void StopTimer()
@@ -503,9 +507,14 @@ public class GameController : MonoBehaviour {
         pointsForRoundPanel.SetActive(false);
     }
 
+    void HideButtonToRestartGame()
+    {
+        restartGameButton.SetActive(false);
+    }
+
     void UpdatePoints()
     {
-        int pointsInThisRound = rows * columns * (int)targetTime;
+        pointsInThisRound = rows * columns * ((int)Math.Round(targetTime, 0) + 1);
         Debug.Log("Time left: "+ targetTime + ", Points scored: " + pointsInThisRound);
         points += pointsInThisRound;
         pointsText.text = points.ToString();
@@ -530,13 +539,25 @@ public class GameController : MonoBehaviour {
         numberOfMoves += 5;
         CheckIfNewLevel();
         BeforeNewBoard();
+        StartTimer();
+    }
+
+    void StartTimer()
+    {
+        stillPlaying = true;
     }
 
     void ShowPointsForRound()
     {
         pointsForRoundPanel.SetActive(true);
         pointsForRoundPanel.transform.SetAsLastSibling();
-        pointsForRoundText.text = points.ToString();
+        pointsForRoundText.text = pointsInThisRound.ToString();
+    }
+
+    void ShowButtonToRestartGame()
+    {
+        restartGameButton.SetActive(true);
+        restartGameButton.transform.SetAsLastSibling();
     }
 
     void CheckIfNewLevel()
@@ -638,4 +659,10 @@ public class GameController : MonoBehaviour {
         }
         return new int[] { xChange, yChange };
     }
+
+    public void RestartGame()
+    {
+        AfterEachBoard();
+    }
+
 }
