@@ -14,8 +14,8 @@ public class GameController : MonoBehaviour {
     public Sprite downArrow;
     public Sprite downRightArrow;
     public Sprite downLeftArrow;
-    private int columns = 3;
-    private int rows = 2;
+    private int columns = 5;
+    private int rows = 4;
     private int board3x2limit = 200;
     private int board3x3limit = 600;
     private int board4x3limit = 1200;
@@ -73,10 +73,7 @@ public class GameController : MonoBehaviour {
     private int points;
     private float targetTime;
     private List<GameObject> gridsList;
-    float timer = 0;
-    float timeToWait = 20000.1f;
-    bool checkingTime = true;
-    bool timerDone;
+    private bool stillPlaying = true;
 
     private void Awake()
     {
@@ -87,10 +84,13 @@ public class GameController : MonoBehaviour {
 
     private void Update()
     {
-        if (targetTime > 0)
+        if (stillPlaying)
         {
-            targetTime -= Time.deltaTime;
-            timerText.text = Math.Round(targetTime, 0).ToString();
+            if (targetTime > 0)
+            {
+                targetTime -= Time.deltaTime;
+                timerText.text = Math.Round(targetTime, 0).ToString();
+            }
         }
     }
 
@@ -433,6 +433,7 @@ public class GameController : MonoBehaviour {
             LockButtons();
             ColorCorrectNumbersDisabledColor();
             ShowPointsForRound();
+            StopTimer();
             //AfterEachBoard();
         }
 
@@ -442,6 +443,7 @@ public class GameController : MonoBehaviour {
             LockButtons();
             ColorCorrectNumbersDisabledColor();
             ShowPointsForRound();
+            StopTimer();
             //AfterEachBoard();
         }
         else
@@ -449,6 +451,11 @@ public class GameController : MonoBehaviour {
             numberOfMoves--;
             numberOfMovesText.text = numberOfMoves.ToString();
         }
+    }
+
+    void StopTimer()
+    {
+        stillPlaying = false;
     }
 
     void ColorCorrectNumbersOnButtons()
@@ -471,9 +478,9 @@ public class GameController : MonoBehaviour {
 
     void ColorCorrectNumbersDisabledColor()
     {
-        for (int x = 0; x < columns; x++)
+        for (int y = (rows - 1); y >= 0; y--)
         {
-            for (int y = 0; y < rows; y++)
+            for (int x = 0; x < columns; x++)
             {
                 int correctNumberOnField = (x + 1) + Math.Abs(y - (rows - 1)) * columns;
                 if (buttonTextArray[x, y].text == correctNumberOnField.ToString())
@@ -482,6 +489,10 @@ public class GameController : MonoBehaviour {
                     ColorBlock cb = b.colors;
                     cb.disabledColor = Color.green;
                     b.colors = cb;
+                }
+                else
+                {
+                    break;
                 }
             }
         }
