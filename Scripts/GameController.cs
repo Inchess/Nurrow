@@ -547,12 +547,11 @@ public class GameController : MonoBehaviour {
 
     void UpdatePoints()
     {
-        int boardss = (int)Math.Pow(rows * columns, 2) / 2;
-        int timess = (int)Math.Round(targetTime, 0) * Math.Min(rows, columns);
-        int numbersss = extraPointsForNumbers * Math.Min(rows, columns);
-        int extrass = extraPointsForNumbers;
-
-        pointsInThisRound = (int)Math.Pow(rows * columns, 2) / 2 + (int)Math.Round(targetTime, 0) * Math.Min(rows, columns) + extraPointsForNumbers * Math.Min(rows, columns);
+        pointsInThisRound = (int)Math.Pow(rows * columns, 2) / 2 + (int)Math.Round(targetTime, 0) * Math.Min(rows, columns);
+        if (columns >= 3)
+        {
+            pointsInThisRound += extraPointsForNumbers * Math.Min(rows, columns);
+        }
         points += pointsInThisRound;
         pointsText.text = points.ToString();
     }
@@ -614,11 +613,7 @@ public class GameController : MonoBehaviour {
         Debug.Log("Current: " + numOfGamesOnCurrentLevel + ", min: " + minNumberOfGamesToNextLevel + ", max: " + maxNumberOfGamesToNextLevel);
         if (numOfGamesOnCurrentLevel >= minNumberOfGamesToNextLevel)
         {
-            if (numOfGamesOnCurrentLevel >= maxNumberOfGamesToNextLevel || points <= board3x2limit)
-            {
-                SetColumnsAndRows(2, 2);
-            }
-            else if (numOfGamesOnCurrentLevel >= maxNumberOfGamesToNextLevel || board3x2limit < points && points <= board3x3limit)
+            if (numOfGamesOnCurrentLevel >= maxNumberOfGamesToNextLevel || board3x2limit < points && points <= board3x3limit)
             {
                 SetColumnsAndRows(3, 2);
             }
