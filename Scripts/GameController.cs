@@ -76,6 +76,7 @@ public class GameController : MonoBehaviour {
     private List<GameObject> gridsList;
     private bool stillPlaying = true;
     private int pointsInThisRound;
+    private int extraPointsForNumbers;
 
 
     private void Awake()
@@ -449,9 +450,9 @@ public class GameController : MonoBehaviour {
 
     void StopGame()
     {
-        UpdatePoints();
         LockButtons();
         ColorCorrectNumbersDisabledColor();
+        UpdatePoints();
         ShowPointsForRound();
         ShowButtonToRestartGame();
         StopTimer();
@@ -493,6 +494,11 @@ public class GameController : MonoBehaviour {
                     ColorBlock cb = b.colors;
                     cb.disabledColor = Color.green;
                     b.colors = cb;
+                    int bigNumber = Int32.Parse(buttonTextArray[x, y].text);
+                    if (bigNumber > 3)
+                    {
+                        extraPointsForNumbers += (int)Math.Pow(bigNumber, 2);
+                    }
                 }
                 else
                 {
@@ -514,8 +520,13 @@ public class GameController : MonoBehaviour {
 
     void UpdatePoints()
     {
-        pointsInThisRound = rows * columns * ((int)Math.Round(targetTime, 0) + 1);
-        Debug.Log("Time left: "+ targetTime + ", Points scored: " + pointsInThisRound);
+        int boardss = (int)Math.Pow(rows * columns, 2) / 2;
+        int timess = (int)Math.Round(targetTime, 0) * Math.Min(rows, columns);
+        int numbersss = extraPointsForNumbers * Math.Min(rows, columns);
+        int extrass = extraPointsForNumbers;
+
+        pointsInThisRound = (int)Math.Pow(rows * columns, 2) / 2 + (int)Math.Round(targetTime, 0) * Math.Min(rows, columns) + extraPointsForNumbers * Math.Min(rows, columns);
+        Debug.Log("Board: "+ boardss + ", time: " + timess + ", numbers: " + numbersss + ", extra " + extrass);
         points += pointsInThisRound;
         pointsText.text = points.ToString();
     }
@@ -540,6 +551,12 @@ public class GameController : MonoBehaviour {
         CheckIfNewLevel();
         BeforeNewBoard();
         StartTimer();
+        ResetExtraPointsForNumbers();
+    }
+
+    void ResetExtraPointsForNumbers()
+    {
+        extraPointsForNumbers = 0;
     }
 
     void StartTimer()
