@@ -5,7 +5,7 @@ using UnityEngine.UI;
 using System;
 
 public class GameController : MonoBehaviour {
-    
+
     public Sprite upArrow;
     public Sprite upLeftArrow;
     public Sprite upRightArrow;
@@ -77,6 +77,9 @@ public class GameController : MonoBehaviour {
     private bool stillPlaying = true;
     private int pointsInThisRound;
     private int extraPointsForNumbers;
+    private int minNumberOfGamesToNextLevel;
+    private int maxNumberOfGamesToNextLevel;
+    private int numOfGamesOnCurrentLevel;
 
 
     private void Awake()
@@ -115,6 +118,24 @@ public class GameController : MonoBehaviour {
         gridSize = CalculateGridSize();
         CalculateBoardSizes();
         ResizeBoard();
+        ResetNumOfGamesOnCurrentLevel();
+        SetMinNumberOfGamesToNextLevel();
+        SetMaxNumberOfGamesToNextLevel();
+    }
+
+    void ResetNumOfGamesOnCurrentLevel()
+    {
+        numOfGamesOnCurrentLevel = 0;
+    }
+
+    void SetMinNumberOfGamesToNextLevel()
+    {
+        minNumberOfGamesToNextLevel = Math.Min(columns, rows) * 2;
+    }
+
+    void SetMaxNumberOfGamesToNextLevel()
+    {
+        maxNumberOfGamesToNextLevel = (columns + rows) * 2;
     }
 
     void BeforeNewBoard()
@@ -125,12 +146,18 @@ public class GameController : MonoBehaviour {
         PrepareArrowsToUse();
         ModifySizeAndMovePrefabGridSize();
         CreateAndArrangeGrids();
+        CopyNumbersToNumbersLeftList();
         AddNumbersToButtons();
         ColorCorrectNumbersOnButtons();
         AddArrowsToButtons();
         SetGameControllerReferenceOnButtons();
         HidePointsForRound();
         HideButtonToRestartGame();
+    }
+
+    void CopyNumbersToNumbersLeftList()
+    {
+        AddNumbersToList(numbersLeft);
     }
 
     private void InstantiateObjects()
@@ -526,7 +553,6 @@ public class GameController : MonoBehaviour {
         int extrass = extraPointsForNumbers;
 
         pointsInThisRound = (int)Math.Pow(rows * columns, 2) / 2 + (int)Math.Round(targetTime, 0) * Math.Min(rows, columns) + extraPointsForNumbers * Math.Min(rows, columns);
-        Debug.Log("Board: "+ boardss + ", time: " + timess + ", numbers: " + numbersss + ", extra " + extrass);
         points += pointsInThisRound;
         pointsText.text = points.ToString();
     }
@@ -542,6 +568,7 @@ public class GameController : MonoBehaviour {
 
     void AfterEachBoard()
     {
+        IncrementNumOfGamesOnCurrentBoard();
         ShowPointsForRound();
         DestroyGrids();
         arrowsToUse.Clear();
@@ -552,6 +579,11 @@ public class GameController : MonoBehaviour {
         BeforeNewBoard();
         StartTimer();
         ResetExtraPointsForNumbers();
+    }
+
+    void IncrementNumOfGamesOnCurrentBoard()
+    {
+        numOfGamesOnCurrentLevel++;
     }
 
     void ResetExtraPointsForNumbers()
@@ -579,32 +611,37 @@ public class GameController : MonoBehaviour {
 
     void CheckIfNewLevel()
     {
-        if (points <= board3x2limit)
+        Debug.Log("Current: " + numOfGamesOnCurrentLevel + ", min: " + minNumberOfGamesToNextLevel + ", max: " + maxNumberOfGamesToNextLevel);
+        if (numOfGamesOnCurrentLevel >= minNumberOfGamesToNextLevel)
         {
-            SetColumnsAndRows(2, 2);
-        } else if (board3x2limit < points && points <= board3x3limit)
-        {
-            SetColumnsAndRows(3, 2);
-        }
-        else if (board3x3limit < points && points <= board4x3limit)
-        {
-            SetColumnsAndRows(3, 3);
-        }
-        else if (board4x3limit < points && points <= board4x4limit)
-        {
-            SetColumnsAndRows(4, 3);
-        }
-        else if (board4x4limit < points && points <= board5x4limit)
-        {
-            SetColumnsAndRows(4, 4);
-        }
-        else if (board5x4limit < points && points <= board5x5limit)
-        {
-            SetColumnsAndRows(5, 4);
-        }
-        else if (board5x5limit < points)
-        {
-            SetColumnsAndRows(5, 5);
+            if (numOfGamesOnCurrentLevel >= maxNumberOfGamesToNextLevel || points <= board3x2limit)
+            {
+                SetColumnsAndRows(2, 2);
+            }
+            else if (numOfGamesOnCurrentLevel >= maxNumberOfGamesToNextLevel || board3x2limit < points && points <= board3x3limit)
+            {
+                SetColumnsAndRows(3, 2);
+            }
+            else if (numOfGamesOnCurrentLevel >= maxNumberOfGamesToNextLevel || board3x3limit < points && points <= board4x3limit)
+            {
+                SetColumnsAndRows(3, 3);
+            }
+            else if (numOfGamesOnCurrentLevel >= maxNumberOfGamesToNextLevel || board4x3limit < points && points <= board4x4limit)
+            {
+                SetColumnsAndRows(4, 3);
+            }
+            else if (numOfGamesOnCurrentLevel >= maxNumberOfGamesToNextLevel || board4x4limit < points && points <= board5x4limit)
+            {
+                SetColumnsAndRows(4, 4);
+            }
+            else if (numOfGamesOnCurrentLevel >= maxNumberOfGamesToNextLevel || board5x4limit < points && points <= board5x5limit)
+            {
+                SetColumnsAndRows(5, 4);
+            }
+            else if (numOfGamesOnCurrentLevel >= maxNumberOfGamesToNextLevel || board5x5limit < points)
+            {
+                SetColumnsAndRows(5, 5);
+            }
         }
     }
 
