@@ -73,10 +73,10 @@ public class GameController : MonoBehaviour {
     private int numOfGamesOnCurrentLevel;
     //GAME ELEMENTS
     public GameObject gameElements;
-    public Text timerText;
-    public Text numberOfMovesText;
-    public Text pointsText;
-    public Text pointsForRoundText;
+    public Text timerValue;
+    public Text numberOfMovesValue;
+    public Text pointsValue;
+    public Text pointsForRoundValue;
     public GameObject pointsForRoundPanel;
     public GameObject restartGameButton;
     //MENU ELEMENTS
@@ -97,7 +97,7 @@ public class GameController : MonoBehaviour {
             if (targetTime > 0)
             {
                 targetTime -= Time.deltaTime;
-                timerText.text = Math.Round(targetTime, 0).ToString();
+                timerValue.text = Math.Round(targetTime, 0).ToString();
             }
         }
     }
@@ -138,7 +138,7 @@ public class GameController : MonoBehaviour {
         InstantiateArrowsLists();
         InstantiateOtherLists();
         SetArrowsNames();
-        numberOfMovesText.text = numberOfMoves.ToString();
+        numberOfMovesValue.text = numberOfMoves.ToString();
     }
 
     void BeforeNewLevel()
@@ -502,7 +502,7 @@ public class GameController : MonoBehaviour {
         else
         {
             numberOfMoves--;
-            numberOfMovesText.text = numberOfMoves.ToString();
+            numberOfMovesValue.text = numberOfMoves.ToString();
         }
     }
 
@@ -584,7 +584,7 @@ public class GameController : MonoBehaviour {
             pointsInThisRound += extraPointsForNumbers * Math.Min(rows, columns);
         }
         points += pointsInThisRound;
-        pointsText.text = points.ToString();
+        pointsValue.text = points.ToString();
     }
 
     void ChangeColor(Text text, Color color)
@@ -630,7 +630,7 @@ public class GameController : MonoBehaviour {
     {
         pointsForRoundPanel.SetActive(true);
         pointsForRoundPanel.transform.SetAsLastSibling();
-        pointsForRoundText.text = pointsInThisRound.ToString();
+        pointsForRoundValue.text = pointsInThisRound.ToString();
     }
 
     void ShowButtonToRestartGame()
