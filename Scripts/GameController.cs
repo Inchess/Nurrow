@@ -47,7 +47,8 @@ public class GameController : MonoBehaviour {
     private int newPositionY;
     private string newButtonNumber;
     private Sprite newImageArrow;
-    private int numberOfMoves = 120;
+    private int startNumberOfMoves = 120;
+    private int numberOfMoves;
     public GameObject gridSpacePrefab;
     public GameObject canvasObject;
     public GameObject boardPanel;
@@ -62,10 +63,10 @@ public class GameController : MonoBehaviour {
     private int textSize;
     private int arrowSize;
     private int arrowMove;
-    private int points;
+    private int totalPoints;
     private float targetTime;
     private List<GameObject> gridsList;
-    private bool stillPlaying = true;
+    private bool stillPlaying;
     private int pointsInThisRound;
     private int extraPointsForNumbers;
     private int minNumberOfGamesToNextLevel;
@@ -77,17 +78,21 @@ public class GameController : MonoBehaviour {
     public Text numberOfMovesValue;
     public Text pointsValue;
     public Text pointsForRoundValue;
-    public GameObject pointsForRoundPanel;
-    public GameObject restartGameButton;
     //MENU ELEMENTS
     public GameObject menuPanel;
     public Button startGameButton;
     public Button trainingButton;
+    //AT BOARD END ELEMENTS
+    public GameObject elementsAtBoardEnd;
+    public Text pointsForRoundText;
+    public Button nextGameButton;
+    public Button restartGameButton;
+    public Button menuButton;
 
 
     private void Awake()
     {
-        CreateMenu();
+        GoToMenu();
     }
 
     private void Update()
@@ -102,34 +107,43 @@ public class GameController : MonoBehaviour {
         }
     }
 
-    void CreateMenu()
+    void GoToMenu()
     {
-        menuPanel.SetActive(true);
-        HideGameElements();
+        MenuVisible(true);
+        GameElementsVisible(false);
+        ElementsAtBoardEndVisible(false);
     }
 
-    void HideGameElements()
+    public void GoBackToMenu()
     {
-        gameElements.SetActive(false);
+        DestroyGrids();
+        GoToMenu();
     }
 
-    public void StartGameButton()
+    void GameElementsVisible(bool isVisible)
+    {
+        gameElements.SetActive(isVisible);
+    }
+
+    void ElementsAtBoardEndVisible(bool isVisible)
+    {
+        elementsAtBoardEnd.SetActive(isVisible);
+    }
+
+    void MenuVisible(bool isVisible)
+    {
+        menuPanel.SetActive(isVisible);
+    }
+
+    public void StartGame()
     {
         BeforeWholeGame();
         BeforeNewLevel();
         BeforeNewBoard();
-        HideMenu();
-        ShowGameElements();
-    }
-
-    void HideMenu()
-    {
-        menuPanel.SetActive(false);
-    }
-
-    void ShowGameElements()
-    {
-        gameElements.SetActive(true);
+        MenuVisible(false);
+        GameElementsVisible(true);
+        ElementsAtBoardEndVisible(false);
+        ResetElementsAtBoardEnd();
     }
 
     void BeforeWholeGame()
@@ -138,8 +152,19 @@ public class GameController : MonoBehaviour {
         InstantiateArrowsLists();
         InstantiateOtherLists();
         SetArrowsNames();
-        numberOfMovesValue.text = numberOfMoves.ToString();
+        TimerActive(true);
     }
+
+    void ResetElementsAtBoardEnd()
+    {
+        pointsValue.text = "0";
+        totalPoints = 0;
+        numberOfMovesValue.text = startNumberOfMoves.ToString();
+        numberOfMoves = startNumberOfMoves;
+        SetTime();
+        timerValue.text = targetTime.ToString();
+    }
+    
 
     void BeforeNewLevel()
     {
@@ -182,8 +207,6 @@ public class GameController : MonoBehaviour {
         ColorCorrectNumbersOnButtons();
         AddArrowsToButtons();
         SetGameControllerReferenceOnButtons();
-        HidePointsForRound();
-        HideButtonToRestartGame();
     }
 
     void CopyNumbersToNumbersLeftList()
@@ -512,13 +535,8 @@ public class GameController : MonoBehaviour {
         ColorCorrectNumbersDisabledColor();
         UpdatePoints();
         ShowPointsForRound();
-        ShowButtonToRestartGame();
-        StopTimer();
-    }
-
-    void StopTimer()
-    {
-        stillPlaying = false;
+        TimerActive(false);
+        ElementsAtBoardEndVisible(true);
     }
 
     void ColorCorrectNumbersOnButtons()
@@ -566,16 +584,6 @@ public class GameController : MonoBehaviour {
         }
     }
 
-    void HidePointsForRound()
-    {
-        pointsForRoundPanel.SetActive(false);
-    }
-
-    void HideButtonToRestartGame()
-    {
-        restartGameButton.SetActive(false);
-    }
-
     void UpdatePoints()
     {
         pointsInThisRound = (int)Math.Pow(rows * columns, 2) / 2 + (int)Math.Round(targetTime, 0) * Math.Min(rows, columns);
@@ -583,8 +591,8 @@ public class GameController : MonoBehaviour {
         {
             pointsInThisRound += extraPointsForNumbers * Math.Min(rows, columns);
         }
-        points += pointsInThisRound;
-        pointsValue.text = points.ToString();
+        totalPoints += pointsInThisRound;
+        pointsValue.text = totalPoints.ToString();
     }
 
     void ChangeColor(Text text, Color color)
@@ -607,7 +615,7 @@ public class GameController : MonoBehaviour {
         numberOfMoves += 5;
         CheckIfNewLevel();
         BeforeNewBoard();
-        StartTimer();
+        TimerActive(true);
         ResetExtraPointsForNumbers();
     }
 
@@ -621,22 +629,14 @@ public class GameController : MonoBehaviour {
         extraPointsForNumbers = 0;
     }
 
-    void StartTimer()
+    void TimerActive(bool isActive)
     {
-        stillPlaying = true;
+        stillPlaying = isActive;
     }
 
     void ShowPointsForRound()
     {
-        pointsForRoundPanel.SetActive(true);
-        pointsForRoundPanel.transform.SetAsLastSibling();
         pointsForRoundValue.text = pointsInThisRound.ToString();
-    }
-
-    void ShowButtonToRestartGame()
-    {
-        restartGameButton.SetActive(true);
-        restartGameButton.transform.SetAsLastSibling();
     }
 
     void CheckIfNewLevel()
@@ -644,27 +644,27 @@ public class GameController : MonoBehaviour {
         Debug.Log("Current: " + numOfGamesOnCurrentLevel + ", min: " + minNumberOfGamesToNextLevel + ", max: " + maxNumberOfGamesToNextLevel);
         if (numOfGamesOnCurrentLevel >= minNumberOfGamesToNextLevel)
         {
-            if (numOfGamesOnCurrentLevel >= maxNumberOfGamesToNextLevel || board3x2limit < points && points <= board3x3limit)
+            if (numOfGamesOnCurrentLevel >= maxNumberOfGamesToNextLevel || board3x2limit < totalPoints && totalPoints <= board3x3limit)
             {
                 SetColumnsAndRows(3, 2);
             }
-            else if (numOfGamesOnCurrentLevel >= maxNumberOfGamesToNextLevel || board3x3limit < points && points <= board4x3limit)
+            else if (numOfGamesOnCurrentLevel >= maxNumberOfGamesToNextLevel || board3x3limit < totalPoints && totalPoints <= board4x3limit)
             {
                 SetColumnsAndRows(3, 3);
             }
-            else if (numOfGamesOnCurrentLevel >= maxNumberOfGamesToNextLevel || board4x3limit < points && points <= board4x4limit)
+            else if (numOfGamesOnCurrentLevel >= maxNumberOfGamesToNextLevel || board4x3limit < totalPoints && totalPoints <= board4x4limit)
             {
                 SetColumnsAndRows(4, 3);
             }
-            else if (numOfGamesOnCurrentLevel >= maxNumberOfGamesToNextLevel || board4x4limit < points && points <= board5x4limit)
+            else if (numOfGamesOnCurrentLevel >= maxNumberOfGamesToNextLevel || board4x4limit < totalPoints && totalPoints <= board5x4limit)
             {
                 SetColumnsAndRows(4, 4);
             }
-            else if (numOfGamesOnCurrentLevel >= maxNumberOfGamesToNextLevel || board5x4limit < points && points <= board5x5limit)
+            else if (numOfGamesOnCurrentLevel >= maxNumberOfGamesToNextLevel || board5x4limit < totalPoints && totalPoints <= board5x5limit)
             {
                 SetColumnsAndRows(5, 4);
             }
-            else if (numOfGamesOnCurrentLevel >= maxNumberOfGamesToNextLevel || board5x5limit < points)
+            else if (numOfGamesOnCurrentLevel >= maxNumberOfGamesToNextLevel || board5x5limit < totalPoints)
             {
                 SetColumnsAndRows(5, 5);
             }
@@ -740,7 +740,7 @@ public class GameController : MonoBehaviour {
         return new int[] { xChange, yChange };
     }
 
-    public void RestartGame()
+    public void NextBoard()
     {
         AfterEachBoard();
     }
