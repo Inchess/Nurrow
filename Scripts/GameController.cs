@@ -51,9 +51,6 @@ public class GameController : MonoBehaviour {
     public GameObject gridSpacePrefab;
     public GameObject canvasObject;
     public GameObject boardPanel;
-    public GameObject divisionLine;
-    public GameObject textPrefab;
-    public GameObject image;
     private int maxBoardSize = 512;
     private int boardSizeHeight;
     private int boardSizeWidth;
@@ -65,12 +62,6 @@ public class GameController : MonoBehaviour {
     private int textSize;
     private int arrowSize;
     private int arrowMove;
-    public Text timerText;
-    public Text numberOfMovesText;
-    public Text pointsText;
-    public Text pointsForRoundText;
-    public GameObject pointsForRoundPanel;
-    public GameObject restartGameButton;
     private int points;
     private float targetTime;
     private List<GameObject> gridsList;
@@ -80,6 +71,15 @@ public class GameController : MonoBehaviour {
     private int minNumberOfGamesToNextLevel;
     private int maxNumberOfGamesToNextLevel;
     private int numOfGamesOnCurrentLevel;
+    //GAME ELEMENTS
+    public GameObject gameElements;
+    public Text timerText;
+    public Text numberOfMovesText;
+    public Text pointsText;
+    public Text pointsForRoundText;
+    public GameObject pointsForRoundPanel;
+    public GameObject restartGameButton;
+    //MENU ELEMENTS
     public GameObject menuPanel;
     public Button startGameButton;
     public Button trainingButton;
@@ -88,9 +88,6 @@ public class GameController : MonoBehaviour {
     private void Awake()
     {
         CreateMenu();
-        BeforeWholeGame();
-        BeforeNewLevel();
-        BeforeNewBoard();
     }
 
     private void Update()
@@ -107,7 +104,32 @@ public class GameController : MonoBehaviour {
 
     void CreateMenu()
     {
+        menuPanel.SetActive(true);
+        HideGameElements();
+    }
 
+    void HideGameElements()
+    {
+        gameElements.SetActive(false);
+    }
+
+    public void StartGameButton()
+    {
+        BeforeWholeGame();
+        BeforeNewLevel();
+        BeforeNewBoard();
+        HideMenu();
+        ShowGameElements();
+    }
+
+    void HideMenu()
+    {
+        menuPanel.SetActive(false);
+    }
+
+    void ShowGameElements()
+    {
+        gameElements.SetActive(true);
     }
 
     void BeforeWholeGame()
