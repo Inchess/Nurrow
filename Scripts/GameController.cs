@@ -80,10 +80,14 @@ public class GameController : MonoBehaviour {
     private int minNumberOfGamesToNextLevel;
     private int maxNumberOfGamesToNextLevel;
     private int numOfGamesOnCurrentLevel;
+    public GameObject menuPanel;
+    public Button startGameButton;
+    public Button trainingButton;
 
 
     private void Awake()
     {
+        CreateMenu();
         BeforeWholeGame();
         BeforeNewLevel();
         BeforeNewBoard();
@@ -99,6 +103,11 @@ public class GameController : MonoBehaviour {
                 timerText.text = Math.Round(targetTime, 0).ToString();
             }
         }
+    }
+
+    void CreateMenu()
+    {
+
     }
 
     void BeforeWholeGame()
