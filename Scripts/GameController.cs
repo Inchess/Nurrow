@@ -88,6 +88,8 @@ public class GameController : MonoBehaviour {
     public Button nextGameButton;
     public Button restartGameButton;
     public Button menuButton;
+    //TRAINING ELEMENTS
+    public GameObject trainingPanel;
 
 
     private void Awake()
@@ -107,9 +109,10 @@ public class GameController : MonoBehaviour {
         }
     }
 
-    void GoToMenu()
+    public void GoToMenu()
     {
         MenuVisible(true);
+        TrainingPanelVisible(false);
         GameElementsVisible(false);
         ElementsAtBoardEndVisible(false);
     }
@@ -118,6 +121,11 @@ public class GameController : MonoBehaviour {
     {
         DestroyGrids();
         GoToMenu();
+    }
+
+    void TrainingPanelVisible(bool isVisible)
+    {
+        trainingPanel.SetActive(isVisible);
     }
 
     void GameElementsVisible(bool isVisible)
@@ -143,6 +151,7 @@ public class GameController : MonoBehaviour {
         MenuVisible(false);
         GameElementsVisible(true);
         ElementsAtBoardEndVisible(false);
+        TrainingPanelVisible(false);
         ResetElementsAtBoardEnd();
     }
 
@@ -736,6 +745,14 @@ public class GameController : MonoBehaviour {
     {
         DestroyGrids();
         StartGame();
+    }
+
+    public void GoToTraining()
+    {
+        MenuVisible(false);
+        TrainingPanelVisible(true);
+        ElementsAtBoardEndVisible(false);
+        GameElementsVisible(false);
     }
 
 }
