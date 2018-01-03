@@ -522,7 +522,7 @@ public class GameController : MonoBehaviour {
         ColorCorrectNumbersOnButtons();
         if (numberOfMoves <= 0)
         {
-            StopGame();
+            FinishGame();
         }
         else if (columns == 2 && buttonTextArray[0, 1].text == "1" && buttonTextArray[1, 1].text == "2" && buttonTextArray[0, 0].text == "3")
         {
@@ -543,6 +543,13 @@ public class GameController : MonoBehaviour {
         pointsForRoundValue.text = pointsInThisRound.ToString();
         TimerActive(false);
         ElementsAtBoardEndVisible(true);
+    }
+
+    void FinishGame()
+    {
+        LockButtons();
+        ColorCorrectNumbersDisabledColor();
+        TimerActive(false);
     }
 
     void ColorCorrectNumbersOnButtons()
@@ -628,6 +635,7 @@ public class GameController : MonoBehaviour {
         BeforeNewBoard();
         TimerActive(true);
         extraPointsForNumbers = 0;
+        ElementsAtBoardEndVisible(false);
     }
 
     void TimerActive(bool isActive)
@@ -757,50 +765,43 @@ public class GameController : MonoBehaviour {
 
     public void Training2x2()
     {
-        BeforeWholeGame();
-        SetColumnsAndRows(2, 2);
-        StartGame();
+        StartTraining(2, 2);
     }
 
     public void Training3x2()
     {
-        BeforeWholeGame();
-        SetColumnsAndRows(3, 2);
-        StartGame();
+        StartTraining(3, 2);
     }
 
     public void Training3x3()
     {
-        BeforeWholeGame();
-        SetColumnsAndRows(3, 3);
-        StartGame();
+        StartTraining(3, 3);
     }
 
     public void Training4x3()
     {
-        BeforeWholeGame();
-        SetColumnsAndRows(4, 3);
-        StartGame();
+        StartTraining(4, 3);
     }
 
     public void Training4x4()
     {
-        BeforeWholeGame();
-        SetColumnsAndRows(4, 4);
-        StartGame();
+        StartTraining(4, 4);
     }
 
     public void Training5x4()
     {
-        BeforeWholeGame();
-        SetColumnsAndRows(5, 4);
-        StartGame();
+        StartTraining(5, 4);
     }
 
     public void Training5x5()
     {
+        StartTraining(5, 5);
+    }
+
+    void StartTraining(int boardColumns, int boardRows)
+    {
         BeforeWholeGame();
-        SetColumnsAndRows(5, 5);
+        SetColumnsAndRows(boardColumns, boardRows);
         StartGame();
     }
 
