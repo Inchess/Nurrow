@@ -755,4 +755,53 @@ public class GameController : MonoBehaviour {
         GameElementsVisible(false);
     }
 
+    public void Training2x2()
+    {
+        BeforeWholeGame();
+        SetColumnsAndRows(2, 2);
+        StartGame();
+    }
+
+    public void Training3x2()
+    {
+        BeforeWholeGame();
+        SetColumnsAndRows(3, 2);
+        StartGame();
+    }
+
+    public void Training3x3()
+    {
+        BeforeWholeGame();
+        SetColumnsAndRows(3, 3);
+        StartGame();
+    }
+
+    public void Training4x3()
+    {
+        BeforeWholeGame();
+        SetColumnsAndRows(4, 3);
+        StartGame();
+    }
+
+    public void Training4x4()
+    {
+        BeforeWholeGame();
+        SetColumnsAndRows(4, 4);
+        StartGame();
+    }
+
+    public void Training5x4()
+    {
+        BeforeWholeGame();
+        SetColumnsAndRows(5, 4);
+        StartGame();
+    }
+
+    public void Training5x5()
+    {
+        BeforeWholeGame();
+        SetColumnsAndRows(5, 5);
+        StartGame();
+    }
+
 }
