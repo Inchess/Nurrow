@@ -508,10 +508,12 @@ public class GameController : MonoBehaviour {
 
     void CheckIfGameFinished(Button button)
     {
+        numberOfMoves--;
+        numberOfMovesValue.text = numberOfMoves.ToString();
         ColorCorrectNumbersOnButtons();
         if (numberOfMoves <= 0)
         {
-            LockButtons();
+            StopGame();
         }
         else if (columns == 2 && buttonTextArray[0, 1].text == "1" && buttonTextArray[1, 1].text == "2" && buttonTextArray[0, 0].text == "3")
         {
@@ -521,12 +523,7 @@ public class GameController : MonoBehaviour {
         else if (columns > 2 && buttonTextArray[0, rows-1].text == "1" && buttonTextArray[1, rows - 1].text == "2" && buttonTextArray[2, rows - 1].text == "3")
         {
             StopGame();
-        }
-        else
-        {
-            numberOfMoves--;
-            numberOfMovesValue.text = numberOfMoves.ToString();
-        }
+        }        
     }
 
     void StopGame()
@@ -534,7 +531,7 @@ public class GameController : MonoBehaviour {
         LockButtons();
         ColorCorrectNumbersDisabledColor();
         UpdatePoints();
-        ShowPointsForRound();
+        pointsForRoundValue.text = pointsInThisRound.ToString();
         TimerActive(false);
         ElementsAtBoardEndVisible(true);
     }
@@ -559,29 +556,33 @@ public class GameController : MonoBehaviour {
 
     void ColorCorrectNumbersDisabledColor()
     {
-        for (int y = (rows - 1); y >= 0; y--)
+        Action work = delegate
         {
-            for (int x = 0; x < columns; x++)
+            for (int y = (rows - 1); y >= 0; y--)
             {
-                int correctNumberOnField = (x + 1) + Math.Abs(y - (rows - 1)) * columns;
-                if (buttonTextArray[x, y].text == correctNumberOnField.ToString())
+                for (int x = 0; x < columns; x++)
                 {
-                    Button b = buttonTextArray[x, y].GetComponentInParent<Button>();
-                    ColorBlock cb = b.colors;
-                    cb.disabledColor = Color.green;
-                    b.colors = cb;
-                    int bigNumber = Int32.Parse(buttonTextArray[x, y].text);
-                    if (bigNumber > 3)
+                    int correctNumberOnField = (x + 1) + Math.Abs(y - (rows - 1)) * columns;
+                    if (buttonTextArray[x, y].text == correctNumberOnField.ToString())
                     {
-                        extraPointsForNumbers += (int)Math.Pow(bigNumber, 2);
+                        Button b = buttonTextArray[x, y].GetComponentInParent<Button>();
+                        ColorBlock cb = b.colors;
+                        cb.disabledColor = Color.green;
+                        b.colors = cb;
+                        int bigNumber = Int32.Parse(buttonTextArray[x, y].text);
+                        if (bigNumber > 3)
+                        {
+                            extraPointsForNumbers += (int)Math.Pow(bigNumber, 2);
+                        }
+                    }
+                    else
+                    {
+                        return;
                     }
                 }
-                else
-                {
-                    break;
-                }
             }
-        }
+        };
+        work();
     }
 
     void UpdatePoints()
@@ -606,37 +607,23 @@ public class GameController : MonoBehaviour {
 
     void AfterEachBoard()
     {
-        IncrementNumOfGamesOnCurrentBoard();
-        ShowPointsForRound();
+        numOfGamesOnCurrentLevel++;
+        pointsForRoundValue.text = pointsInThisRound.ToString();
         DestroyGrids();
         arrowsToUse.Clear();
         arrowsListCopy.Clear();
         numbersLeft.Clear();
         numberOfMoves += 5;
+        numberOfMovesValue.text = numberOfMoves.ToString();
         CheckIfNewLevel();
         BeforeNewBoard();
         TimerActive(true);
-        ResetExtraPointsForNumbers();
-    }
-
-    void IncrementNumOfGamesOnCurrentBoard()
-    {
-        numOfGamesOnCurrentLevel++;
-    }
-
-    void ResetExtraPointsForNumbers()
-    {
         extraPointsForNumbers = 0;
     }
 
     void TimerActive(bool isActive)
     {
         stillPlaying = isActive;
-    }
-
-    void ShowPointsForRound()
-    {
-        pointsForRoundValue.text = pointsInThisRound.ToString();
     }
 
     void CheckIfNewLevel()
@@ -743,6 +730,12 @@ public class GameController : MonoBehaviour {
     public void NextBoard()
     {
         AfterEachBoard();
+    }
+
+    public void RestartGame()
+    {
+        DestroyGrids();
+        StartGame();
     }
 
 }
