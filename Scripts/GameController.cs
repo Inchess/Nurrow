@@ -73,12 +73,15 @@ public class GameController : MonoBehaviour {
     private int maxNumberOfGamesToNextLevel;
     private int numOfGamesOnCurrentLevel;
     private bool trainingGame;
+    private int howManyExtraNumbers;
+    private int extraMovesForBigNumbers;
     //GAME ELEMENTS
     public GameObject gameElements;
     public Text timerValue;
     public Text numberOfMovesValue;
     public Text pointsValue;
     public Text pointsForRoundValue;
+    public Text extraMovesForRoundValue;
     //MENU ELEMENTS
     public GameObject menuPanel;
     public Button startGameButton;
@@ -174,6 +177,7 @@ public class GameController : MonoBehaviour {
         numberOfMoves = startNumberOfMoves;
         SetTime();
         timerValue.text = targetTime.ToString();
+        extraMovesForBigNumbers = 0;
     }
     
 
@@ -188,6 +192,7 @@ public class GameController : MonoBehaviour {
         ResetNumOfGamesOnCurrentLevel();
         SetMinNumberOfGamesToNextLevel();
         SetMaxNumberOfGamesToNextLevel();
+        extraMovesForBigNumbers = 0;
     }
 
     void ResetNumOfGamesOnCurrentLevel()
@@ -542,7 +547,9 @@ public class GameController : MonoBehaviour {
         LockButtons();
         ColorCorrectNumbersDisabledColor();
         UpdatePoints();
+        CalculateNumberOfExtraMoves();
         pointsForRoundValue.text = pointsInThisRound.ToString();
+        extraMovesForRoundValue.text = extraMovesForBigNumbers.ToString();
         TimerActive(false);
         ElementsAtBoardEndVisible(true);
     }
@@ -588,8 +595,9 @@ public class GameController : MonoBehaviour {
                         cb.disabledColor = Color.green;
                         b.colors = cb;
                         int bigNumber = Int32.Parse(buttonTextArray[x, y].text);
-                        if (bigNumber > 3)
+                        if (bigNumber > 3 && columns >= 3)
                         {
+                            howManyExtraNumbers++;
                             extraPointsForNumbers += (int)Math.Pow(bigNumber, 2);
                         }
                     }
@@ -605,11 +613,8 @@ public class GameController : MonoBehaviour {
 
     void UpdatePoints()
     {
-        pointsInThisRound = (int)Math.Pow(rows * columns, 2) / 2 + (int)Math.Round(targetTime, 0) * Math.Min(rows, columns);
-        if (columns >= 3)
-        {
-            pointsInThisRound += extraPointsForNumbers * Math.Min(rows, columns);
-        }
+        pointsInThisRound = (int)Math.Pow(rows * columns, 2) / 2 + (int)Math.Round(targetTime, 0) * Math.Min(rows, columns) + 100;
+        pointsInThisRound += extraPointsForNumbers * Math.Min(rows, columns);
         totalPoints += pointsInThisRound;
         pointsValue.text = totalPoints.ToString();
     }
@@ -626,12 +631,11 @@ public class GameController : MonoBehaviour {
     void AfterEachBoard()
     {
         numOfGamesOnCurrentLevel++;
-        pointsForRoundValue.text = pointsInThisRound.ToString();
+        //pointsForRoundValue.text = pointsInThisRound.ToString();
         DestroyGrids();
         arrowsToUse.Clear();
         arrowsListCopy.Clear();
         numbersLeft.Clear();
-        numberOfMoves += 5;
         numberOfMovesValue.text = numberOfMoves.ToString();
         if (!trainingGame)
         {
@@ -640,7 +644,26 @@ public class GameController : MonoBehaviour {
         BeforeNewBoard();
         TimerActive(true);
         extraPointsForNumbers = 0;
+        extraMovesForBigNumbers = 0;
+        howManyExtraNumbers = 0;
         ElementsAtBoardEndVisible(false);
+    }
+
+    void CalculateNumberOfExtraMoves()
+    {
+        extraMovesForBigNumbers += 5;
+        for (int i = 0; i < howManyExtraNumbers; i++)
+        {
+            if (i == 0)
+            {
+                extraMovesForBigNumbers += Math.Min(columns, rows);
+            } else
+            {
+                extraMovesForBigNumbers += Math.Max(columns, rows);
+            }
+        }
+        numberOfMoves = numberOfMoves + extraMovesForBigNumbers;
+        //extraMovesForRoundValue.text = extraMovesForBigNumbers.ToString();
     }
 
     void TimerActive(bool isActive)
@@ -650,7 +673,7 @@ public class GameController : MonoBehaviour {
 
     void CheckIfNewLevel()
     {
-        Debug.Log("Current: " + numOfGamesOnCurrentLevel + ", min: " + minNumberOfGamesToNextLevel + ", max: " + maxNumberOfGamesToNextLevel);
+        Debug.Log("Current: " + numOfGamesOnCurrentLevel + ", min: " + minNumberOfGamesToNextLevel + ", max: " + maxNumberOfGamesToNextLevel + ", extra moves " + extraMovesForBigNumbers);
         if (numOfGamesOnCurrentLevel >= minNumberOfGamesToNextLevel)
         {
             if (numOfGamesOnCurrentLevel >= maxNumberOfGamesToNextLevel || board3x2limit < totalPoints && totalPoints <= board3x3limit)
