@@ -72,6 +72,7 @@ public class GameController : MonoBehaviour {
     private int minNumberOfGamesToNextLevel;
     private int maxNumberOfGamesToNextLevel;
     private int numOfGamesOnCurrentLevel;
+    private bool trainingGame;
     //GAME ELEMENTS
     public GameObject gameElements;
     public Text timerValue;
@@ -111,6 +112,7 @@ public class GameController : MonoBehaviour {
 
     public void GoToMenu()
     {
+        trainingGame = false;
         MenuVisible(true);
         TrainingPanelVisible(false);
         GameElementsVisible(false);
@@ -631,7 +633,10 @@ public class GameController : MonoBehaviour {
         numbersLeft.Clear();
         numberOfMoves += 5;
         numberOfMovesValue.text = numberOfMoves.ToString();
-        CheckIfNewLevel();
+        if (!trainingGame)
+        {
+            CheckIfNewLevel();
+        }
         BeforeNewBoard();
         TimerActive(true);
         extraPointsForNumbers = 0;
@@ -800,6 +805,7 @@ public class GameController : MonoBehaviour {
 
     void StartTraining(int boardColumns, int boardRows)
     {
+        trainingGame = true;
         BeforeWholeGame();
         SetColumnsAndRows(boardColumns, boardRows);
         StartGame();
