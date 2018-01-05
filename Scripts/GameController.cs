@@ -14,14 +14,14 @@ public class GameController : MonoBehaviour {
     public Sprite downArrow;
     public Sprite downRightArrow;
     public Sprite downLeftArrow;
-    private int columns = 2;
-    private int rows = 2;
-    private int board3x2limit = 250;
-    private int board3x3limit = 800;
-    private int board4x3limit = 2000;
-    private int board4x4limit = 5000;
-    private int board5x4limit = 10000;
-    private int board5x5limit = 20000;
+    private int columns = 4;
+    private int rows = 3;
+    private int board3x2limit = 100000;
+    private int board3x3limit = 80000000;
+    private int board4x3limit = 20;
+    private int board4x4limit = 5000000;
+    private int board5x4limit = 100000000;
+    private int board5x5limit = 2000000000;
     private Text[,] buttonTextArray;
     private Image[,] imageArray;
     private List<int> numbers;
@@ -47,7 +47,7 @@ public class GameController : MonoBehaviour {
     private int newPositionY;
     private string newButtonNumber;
     private Sprite newImageArrow;
-    private int startNumberOfMoves = 120;
+    private int startNumberOfMoves = 1000;
     private int numberOfMoves;
     public GameObject gridSpacePrefab;
     public GameObject canvasObject;
@@ -75,6 +75,9 @@ public class GameController : MonoBehaviour {
     private bool trainingGame;
     private int howManyExtraNumbers;
     private int extraMovesForBigNumbers;
+    private int numOfGamesToBlockOneButton;
+    private int numberOfBlockedButtons;
+    private int gameNumberFromWhichBlockingStarts = 2;
     //GAME ELEMENTS
     public GameObject gameElements;
     public Text timerValue;
@@ -179,7 +182,7 @@ public class GameController : MonoBehaviour {
         timerValue.text = targetTime.ToString();
         extraMovesForBigNumbers = 0;
     }
-    
+
 
     void BeforeNewLevel()
     {
@@ -193,6 +196,7 @@ public class GameController : MonoBehaviour {
         SetMinNumberOfGamesToNextLevel();
         SetMaxNumberOfGamesToNextLevel();
         extraMovesForBigNumbers = 0;
+        numberOfBlockedButtons = 0;
     }
 
     void ResetNumOfGamesOnCurrentLevel()
@@ -223,6 +227,61 @@ public class GameController : MonoBehaviour {
         ColorCorrectNumbersOnButtons();
         AddArrowsToButtons();
         SetGameControllerReferenceOnButtons();
+        if (columns >= 4 && rows >= 3 && numOfGamesOnCurrentLevel >= gameNumberFromWhichBlockingStarts)
+        {
+            StartBlockingButtons();
+        }
+    }
+
+    void StartBlockingButtons()
+    {
+        if (numOfGamesToBlockOneButton == 0)
+        {
+            CalculateNumOfGamesToBlockOneButton();
+        }
+        CalculateNumberOfBlockedButtons();
+        BlockButtons();
+    }
+
+    void CalculateNumOfGamesToBlockOneButton()
+    {
+        if (columns == 4 && rows == 3)
+        {
+            numOfGamesToBlockOneButton = 4;
+        }
+        else if (columns == 4 && rows == 4)
+        {
+            numOfGamesToBlockOneButton = 3;
+        }
+        else if (columns == 5 && rows == 4)
+        {
+            numOfGamesToBlockOneButton = 2;
+        }
+        else if (columns == 5 && rows == 5)
+        {
+            numOfGamesToBlockOneButton = 1;
+        }
+    }
+
+    void CalculateNumberOfBlockedButtons()
+    {
+        numberOfBlockedButtons = (numOfGamesOnCurrentLevel - gameNumberFromWhichBlockingStarts) / numOfGamesToBlockOneButton + 1;
+    }
+
+    void BlockButtons()
+    {
+        int rowsThatCanBeBlocked = rows - 2;
+        int randomColumn;
+        int randomRow;
+        for (int i = 0; i < numberOfBlockedButtons; i++)
+        {
+            do
+            {
+                randomColumn = rand.Next(0, columns);
+                randomRow = rand.Next(0, rowsThatCanBeBlocked);
+            } while (buttonTextArray[randomColumn, randomRow].GetComponentInParent<Button>().IsInteractable() == false);
+                buttonTextArray[randomColumn, randomRow].GetComponentInParent<Button>().interactable = false;
+        }
     }
 
     void CopyNumbersToNumbersLeftList()
