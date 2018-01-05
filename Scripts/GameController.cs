@@ -18,7 +18,7 @@ public class GameController : MonoBehaviour {
     private int rows = 3;
     private int board3x2limit = 100000;
     private int board3x3limit = 80000000;
-    private int board4x3limit = 20;
+    private int board4x3limit = 20000000;
     private int board4x4limit = 5000000;
     private int board5x4limit = 100000000;
     private int board5x5limit = 2000000000;
@@ -216,6 +216,7 @@ public class GameController : MonoBehaviour {
 
     void BeforeNewBoard()
     {
+        Debug.Log("Current: " + numOfGamesOnCurrentLevel + ", min: " + minNumberOfGamesToNextLevel + ", max: " + maxNumberOfGamesToNextLevel + ", extra moves " + extraMovesForBigNumbers);
         InstantiateArrowsCopy();
         SetTime();
         CheckCorrectRowsAndColumns();
@@ -247,19 +248,19 @@ public class GameController : MonoBehaviour {
     {
         if (columns == 4 && rows == 3)
         {
-            numOfGamesToBlockOneButton = 4;
+            numOfGamesToBlockOneButton = 6;
         }
         else if (columns == 4 && rows == 4)
         {
-            numOfGamesToBlockOneButton = 3;
+            numOfGamesToBlockOneButton = 5;
         }
         else if (columns == 5 && rows == 4)
         {
-            numOfGamesToBlockOneButton = 2;
+            numOfGamesToBlockOneButton = 4;
         }
         else if (columns == 5 && rows == 5)
         {
-            numOfGamesToBlockOneButton = 1;
+            numOfGamesToBlockOneButton = 3;
         }
     }
 
@@ -732,7 +733,6 @@ public class GameController : MonoBehaviour {
 
     void CheckIfNewLevel()
     {
-        Debug.Log("Current: " + numOfGamesOnCurrentLevel + ", min: " + minNumberOfGamesToNextLevel + ", max: " + maxNumberOfGamesToNextLevel + ", extra moves " + extraMovesForBigNumbers);
         if (numOfGamesOnCurrentLevel >= minNumberOfGamesToNextLevel)
         {
             if (numOfGamesOnCurrentLevel >= maxNumberOfGamesToNextLevel || board3x2limit < totalPoints && totalPoints <= board3x3limit)
