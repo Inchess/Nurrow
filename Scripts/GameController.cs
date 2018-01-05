@@ -14,14 +14,14 @@ public class GameController : MonoBehaviour {
     public Sprite downArrow;
     public Sprite downRightArrow;
     public Sprite downLeftArrow;
-    private int columns = 4;
-    private int rows = 3;
-    private int board3x2limit = 100000;
-    private int board3x3limit = 80000000;
-    private int board4x3limit = 20000000;
-    private int board4x4limit = 5000000;
-    private int board5x4limit = 100000000;
-    private int board5x5limit = 2000000000;
+    private int columns = 2;
+    private int rows = 2;
+    private int board3x2limit = 200;
+    private int board3x3limit = 600;
+    private int board4x3limit = 1500;
+    private int board4x4limit = 3000;
+    private int board5x4limit = 6000;
+    private int board5x5limit = 15000;
     private Text[,] buttonTextArray;
     private Image[,] imageArray;
     private List<int> numbers;
@@ -47,7 +47,7 @@ public class GameController : MonoBehaviour {
     private int newPositionY;
     private string newButtonNumber;
     private Sprite newImageArrow;
-    private int startNumberOfMoves = 1000;
+    private int startNumberOfMoves = 120;
     private int numberOfMoves;
     public GameObject gridSpacePrefab;
     public GameObject canvasObject;
@@ -77,7 +77,7 @@ public class GameController : MonoBehaviour {
     private int extraMovesForBigNumbers;
     private int numOfGamesToBlockOneButton;
     private int numberOfBlockedButtons;
-    private int gameNumberFromWhichBlockingStarts = 2;
+    private int gameNumberFromWhichBlockingStarts = 5;
     //GAME ELEMENTS
     public GameObject gameElements;
     public Text timerValue;
@@ -673,7 +673,7 @@ public class GameController : MonoBehaviour {
 
     void UpdatePoints()
     {
-        pointsInThisRound = (int)Math.Pow(rows * columns, 2) / 2 + (int)Math.Round(targetTime, 0) * Math.Min(rows, columns) + 100;
+        pointsInThisRound = (int)Math.Pow(rows * columns, 2) / 2 + (int)Math.Round(targetTime, 0) * Math.Min(rows, columns);
         pointsInThisRound += extraPointsForNumbers * Math.Min(rows, columns);
         totalPoints += pointsInThisRound;
         pointsValue.text = totalPoints.ToString();
