@@ -165,6 +165,8 @@ public class GameController : MonoBehaviour {
 
     void BeforeWholeGame()
     {
+        columns = 2;
+        rows = 2;
         InstantiateObjects();
         InstantiateArrowsLists();
         InstantiateOtherLists();
