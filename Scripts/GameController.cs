@@ -47,8 +47,7 @@ public class GameController : MonoBehaviour {
     private int newPositionY;
     private string newButtonNumber;
     private Sprite newImageArrow;
-    private int startNumberOfMoves = 120;
-    private int numberOfMoves;
+    private int numberOfMovesLeft = 120;
     public GameObject gridSpacePrefab;
     public GameObject canvasObject;
     public GameObject boardPanel;
@@ -78,6 +77,9 @@ public class GameController : MonoBehaviour {
     private int numOfGamesToBlockOneButton;
     private int numberOfBlockedButtons;
     private int gameNumberFromWhichBlockingStarts = 5;
+    private int pointsAtTheLevelBeginning;
+    private int movesAtTheLevelBeginning;
+    private int pointsToDecreaseForLevelRestart;
     //GAME ELEMENTS
     public GameObject gameElements;
     public Text timerValue;
@@ -92,9 +94,7 @@ public class GameController : MonoBehaviour {
     //AT BOARD END ELEMENTS
     public GameObject elementsAtBoardEnd;
     public Text pointsForRoundText;
-    public Button nextGameButton;
-    public Button restartGameButton;
-    public Button menuButton;
+    public Text restartLevelButtonText;
     //TRAINING ELEMENTS
     public GameObject trainingPanel;
 
@@ -178,8 +178,7 @@ public class GameController : MonoBehaviour {
     {
         pointsValue.text = "0";
         totalPoints = 0;
-        numberOfMovesValue.text = startNumberOfMoves.ToString();
-        numberOfMoves = startNumberOfMoves;
+        numberOfMovesValue.text = numberOfMovesLeft.ToString();
         SetTime();
         timerValue.text = targetTime.ToString();
         extraMovesForBigNumbers = 0;
@@ -199,6 +198,15 @@ public class GameController : MonoBehaviour {
         SetMaxNumberOfGamesToNextLevel();
         extraMovesForBigNumbers = 0;
         numberOfBlockedButtons = 0;
+        SaveValuesFromLevelBeginning();
+        DecreasePointsForLevelRestart();
+        restartLevelButtonText.text = "Zacznij poziom " + columns + "x" + rows + " za " + pointsToDecreaseForLevelRestart + " punktów";
+    }
+
+    void SaveValuesFromLevelBeginning()
+    {
+        movesAtTheLevelBeginning = numberOfMovesLeft;
+        pointsAtTheLevelBeginning = totalPoints;
     }
 
     void ResetNumOfGamesOnCurrentLevel()
@@ -586,10 +594,10 @@ public class GameController : MonoBehaviour {
 
     void CheckIfGameFinished(Button button)
     {
-        numberOfMoves--;
-        numberOfMovesValue.text = numberOfMoves.ToString();
+        numberOfMovesLeft--;
+        numberOfMovesValue.text = numberOfMovesLeft.ToString();
         ColorCorrectNumbersOnButtons();
-        if (numberOfMoves <= 0)
+        if (numberOfMovesLeft <= 0)
         {
             FinishGame();
         }
@@ -698,7 +706,7 @@ public class GameController : MonoBehaviour {
         arrowsToUse.Clear();
         arrowsListCopy.Clear();
         numbersLeft.Clear();
-        numberOfMovesValue.text = numberOfMoves.ToString();
+        numberOfMovesValue.text = numberOfMovesLeft.ToString();
         if (!trainingGame)
         {
             CheckIfNewLevel();
@@ -724,7 +732,7 @@ public class GameController : MonoBehaviour {
                 extraMovesForBigNumbers += Math.Max(columns, rows);
             }
         }
-        numberOfMoves = numberOfMoves + extraMovesForBigNumbers;
+        numberOfMovesLeft = numberOfMovesLeft + extraMovesForBigNumbers;
         //extraMovesForRoundValue.text = extraMovesForBigNumbers.ToString();
     }
 
@@ -893,6 +901,49 @@ public class GameController : MonoBehaviour {
         BeforeWholeGame();
         SetColumnsAndRows(boardColumns, boardRows);
         StartGame();
+    }
+
+    public void RestartCurrentLevel()
+    {
+        DestroyGrids();
+        totalPoints = pointsAtTheLevelBeginning - pointsToDecreaseForLevelRestart;
+        pointsAtTheLevelBeginning = totalPoints;
+        if (totalPoints <= 0)
+        {
+            totalPoints = 0;
+        }
+        numberOfMovesLeft = movesAtTheLevelBeginning;
+        numOfGamesOnCurrentLevel = 0;
+        pointsValue.text = totalPoints.ToString();
+        numberOfMovesValue.text = numberOfMovesLeft.ToString();
+        BeforeNewBoard();
+        ElementsAtBoardEndVisible(false);
+    }
+
+    void DecreasePointsForLevelRestart()
+    {
+        if (columns == 2 && rows == 2)
+        {
+            pointsToDecreaseForLevelRestart = 50;
+        } else if (columns == 3 && rows == 2)
+        {
+            pointsToDecreaseForLevelRestart = 150;
+        } else if (columns == 3 && rows == 3)
+        {
+            pointsToDecreaseForLevelRestart = 300;
+        } else if (columns == 4 && rows == 3)
+        {
+            pointsToDecreaseForLevelRestart = 500;
+        } else if (columns == 4 && rows == 4)
+        {
+            pointsToDecreaseForLevelRestart = 750;
+        } else if (columns == 5 && rows == 4)
+        {
+            pointsToDecreaseForLevelRestart = 1050;
+        } else if (columns == 5 && rows == 5)
+        {
+            pointsToDecreaseForLevelRestart = 1400;
+        }
     }
 
 }
