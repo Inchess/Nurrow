@@ -50,7 +50,6 @@ public class GameController : MonoBehaviour {
     private int numberOfMovesLeft = 120;
     public GameObject gridSpacePrefab;
     public GameObject canvasObject;
-    public GameObject boardPanel;
     private int maxBoardSize = 512;
     private int boardSizeHeight;
     private int boardSizeWidth;
@@ -127,7 +126,6 @@ public class GameController : MonoBehaviour {
 
     public void GoBackToMenu()
     {
-        DestroyGrids();
         GoToMenu();
     }
 
@@ -192,14 +190,16 @@ public class GameController : MonoBehaviour {
         CalculateNumberOfDivisions();
         gridSize = CalculateGridSize();
         CalculateBoardSizes();
-        ResizeBoard();
-        ResetNumOfGamesOnCurrentLevel();
+        numOfGamesOnCurrentLevel = 0;
         SetMinNumberOfGamesToNextLevel();
         SetMaxNumberOfGamesToNextLevel();
         extraMovesForBigNumbers = 0;
         numberOfBlockedButtons = 0;
         SaveValuesFromLevelBeginning();
         DecreasePointsForLevelRestart();
+        CheckCorrectRowsAndColumns();
+        ModifySizeAndMovePrefabGridSize();
+        CreateAndArrangeGrids();
         restartLevelButtonText.text = "Zacznij poziom " + columns + "x" + rows + " za " + pointsToDecreaseForLevelRestart + " punktów";
     }
 
@@ -207,11 +207,6 @@ public class GameController : MonoBehaviour {
     {
         movesAtTheLevelBeginning = numberOfMovesLeft;
         pointsAtTheLevelBeginning = totalPoints;
-    }
-
-    void ResetNumOfGamesOnCurrentLevel()
-    {
-        numOfGamesOnCurrentLevel = 0;
     }
 
     void SetMinNumberOfGamesToNextLevel()
@@ -229,10 +224,7 @@ public class GameController : MonoBehaviour {
         Debug.Log("Current: " + numOfGamesOnCurrentLevel + ", min: " + minNumberOfGamesToNextLevel + ", max: " + maxNumberOfGamesToNextLevel + ", extra moves " + extraMovesForBigNumbers);
         InstantiateArrowsCopy();
         SetTime();
-        CheckCorrectRowsAndColumns();
         PrepareArrowsToUse();
-        ModifySizeAndMovePrefabGridSize();
-        CreateAndArrangeGrids();
         CopyNumbersToNumbersLeftList();
         AddNumbersToButtons();
         ColorCorrectNumbersOnButtons();
@@ -476,12 +468,6 @@ public class GameController : MonoBehaviour {
         boardSizeHeight = rows * gridSize + 2 * rows * gridAssetFromDivisions + numberOfDivisionsInWidth * divisionLineWidth;
     }
 
-    private void ResizeBoard()
-    {
-        RectTransform boardRectTransform = boardPanel.GetComponent<RectTransform>();
-        boardRectTransform.sizeDelta = new Vector2(boardSizeWidth, boardSizeHeight);
-    }
-
     private void CreateAndArrangeGrids()
     {
         for (int x = 0; x < columns; x++)
@@ -700,9 +686,8 @@ public class GameController : MonoBehaviour {
 
     void AfterEachBoard()
     {
+        RemoveNumbersAndArrows();
         numOfGamesOnCurrentLevel++;
-        //pointsForRoundValue.text = pointsInThisRound.ToString();
-        DestroyGrids();
         arrowsToUse.Clear();
         arrowsListCopy.Clear();
         numbersLeft.Clear();
@@ -719,6 +704,11 @@ public class GameController : MonoBehaviour {
         ElementsAtBoardEndVisible(false);
     }
 
+    void RemoveNumbersAndArrows()
+    {
+
+    }
+
     void CalculateNumberOfExtraMoves()
     {
         extraMovesForBigNumbers += 5;
@@ -733,7 +723,6 @@ public class GameController : MonoBehaviour {
             }
         }
         numberOfMovesLeft = numberOfMovesLeft + extraMovesForBigNumbers;
-        //extraMovesForRoundValue.text = extraMovesForBigNumbers.ToString();
     }
 
     void TimerActive(bool isActive)
@@ -772,18 +761,11 @@ public class GameController : MonoBehaviour {
         }
     }
 
-    void DestroyGrids()
-    {
-        for (int i = 0; i < gridsList.Count; i++)
-        {
-            Destroy(gridsList[i]);
-        }
-    }
-
     void SetColumnsAndRows(int columns, int rows)
     {
         this.columns = columns;
         this.rows = rows;
+        DestroyGrids();
         BeforeNewLevel();
     }
 
@@ -848,7 +830,6 @@ public class GameController : MonoBehaviour {
 
     public void RestartGame()
     {
-        DestroyGrids();
         StartGame();
     }
 
@@ -905,7 +886,6 @@ public class GameController : MonoBehaviour {
 
     public void RestartCurrentLevel()
     {
-        DestroyGrids();
         totalPoints = pointsAtTheLevelBeginning - pointsToDecreaseForLevelRestart;
         pointsAtTheLevelBeginning = totalPoints;
         if (totalPoints <= 0)
@@ -917,6 +897,7 @@ public class GameController : MonoBehaviour {
         pointsValue.text = totalPoints.ToString();
         numberOfMovesValue.text = numberOfMovesLeft.ToString();
         BeforeNewBoard();
+        timerValue.text = targetTime.ToString();
         ElementsAtBoardEndVisible(false);
     }
 
@@ -943,6 +924,14 @@ public class GameController : MonoBehaviour {
         } else if (columns == 5 && rows == 5)
         {
             pointsToDecreaseForLevelRestart = 1400;
+        }
+    }
+
+    void DestroyGrids()
+    {
+        for (int i = 0; i < gridsList.Count; i++)
+        {
+            Destroy(gridsList[i]);
         }
     }
 
