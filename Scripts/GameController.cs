@@ -75,7 +75,7 @@ public class GameController : MonoBehaviour {
     private int extraMovesForBigNumbers;
     private int numOfGamesToBlockOneButton;
     private int numberOfBlockedButtons;
-    private int gameNumberFromWhichBlockingStarts = 5;
+    private int gameNumberFromWhichBlockingStarts = 4;
     private int pointsAtTheLevelBeginning;
     private int movesAtTheLevelBeginning;
     private int pointsToDecreaseForLevelRestart;
@@ -126,6 +126,7 @@ public class GameController : MonoBehaviour {
 
     public void GoBackToMenu()
     {
+        DestroyGrids();
         GoToMenu();
     }
 
@@ -149,9 +150,9 @@ public class GameController : MonoBehaviour {
         menuPanel.SetActive(isVisible);
     }
 
-    public void StartGame()
+    public void StartGame(int columns, int rows)
     {
-        BeforeWholeGame();
+        BeforeWholeGame(columns, rows);
         BeforeNewLevel();
         BeforeNewBoard();
         MenuVisible(false);
@@ -161,10 +162,10 @@ public class GameController : MonoBehaviour {
         ResetElementsAtBoardEnd();
     }
 
-    void BeforeWholeGame()
+    void BeforeWholeGame(int columns, int rows)
     {
-        columns = 2;
-        rows = 2;
+        this.columns = columns;
+        this.rows = rows;
         InstantiateObjects();
         InstantiateArrowsLists();
         InstantiateOtherLists();
@@ -211,16 +212,17 @@ public class GameController : MonoBehaviour {
 
     void SetMinNumberOfGamesToNextLevel()
     {
-        minNumberOfGamesToNextLevel = Math.Min(columns, rows) * 2;
+        minNumberOfGamesToNextLevel = Math.Max(columns, rows);
     }
 
     void SetMaxNumberOfGamesToNextLevel()
     {
-        maxNumberOfGamesToNextLevel = (columns + rows) * 2;
+        maxNumberOfGamesToNextLevel = columns + rows;
     }
 
     void BeforeNewBoard()
     {
+        numOfGamesOnCurrentLevel++;
         Debug.Log("Current: " + numOfGamesOnCurrentLevel + ", min: " + minNumberOfGamesToNextLevel + ", max: " + maxNumberOfGamesToNextLevel + ", extra moves " + extraMovesForBigNumbers);
         InstantiateArrowsCopy();
         SetTime();
@@ -555,7 +557,12 @@ public class GameController : MonoBehaviour {
 
     void ChangeButtonsPlaces(string clickedButtonNumber)
     {
-        CalculateNewLocation();
+        int moveValue = 1;
+        int[] arrowTransition = ChangeLocation(clickedButtonArrowName, moveValue);
+        newPositionX = (clickedButtonX + arrowTransition[0] + columns) % columns;
+        newPositionY = (clickedButtonY + arrowTransition[1] + rows) % rows;
+        newButtonNumber = buttonTextArray[newPositionX, newPositionY].text;
+        newImageArrow = imageArray[newPositionX, newPositionY].sprite;
         buttonTextArray[newPositionX, newPositionY].text = clickedButtonNumber;
         buttonTextArray[clickedButtonX, clickedButtonY].text = newButtonNumber;
     }
@@ -566,16 +573,6 @@ public class GameController : MonoBehaviour {
         imageArray[clickedButtonX, clickedButtonY].sprite = newImageArrow;
         SetArrowLocation(arrow, imageArray[newPositionX, newPositionY]);
         SetArrowLocation(newImageArrow, imageArray[clickedButtonX, clickedButtonY]);
-    }
-
-    void CalculateNewLocation()
-    {
-        int moveValue = 1;
-        int[] arrowTransition = ChangeLocation(clickedButtonArrowName, moveValue);
-        newPositionX = (clickedButtonX + arrowTransition[0] + columns) % columns;
-        newPositionY = (clickedButtonY + arrowTransition[1] + rows) % rows;
-        newButtonNumber = buttonTextArray[newPositionX, newPositionY].text;
-        newImageArrow = imageArray[newPositionX, newPositionY].sprite;
     }
 
     void CheckIfGameFinished(Button button)
@@ -600,7 +597,7 @@ public class GameController : MonoBehaviour {
 
     void StopGame()
     {
-        LockButtons();
+        AreButtonsInteractable(false);
         ColorCorrectNumbersDisabledColor();
         UpdatePoints();
         CalculateNumberOfExtraMoves();
@@ -612,7 +609,7 @@ public class GameController : MonoBehaviour {
 
     void FinishGame()
     {
-        LockButtons();
+        AreButtonsInteractable(false);
         ColorCorrectNumbersDisabledColor();
         TimerActive(false);
     }
@@ -686,8 +683,6 @@ public class GameController : MonoBehaviour {
 
     void AfterEachBoard()
     {
-        RemoveNumbersAndArrows();
-        numOfGamesOnCurrentLevel++;
         arrowsToUse.Clear();
         arrowsListCopy.Clear();
         numbersLeft.Clear();
@@ -702,11 +697,7 @@ public class GameController : MonoBehaviour {
         extraMovesForBigNumbers = 0;
         howManyExtraNumbers = 0;
         ElementsAtBoardEndVisible(false);
-    }
-
-    void RemoveNumbersAndArrows()
-    {
-
+        AreButtonsInteractable(true);
     }
 
     void CalculateNumberOfExtraMoves()
@@ -769,13 +760,13 @@ public class GameController : MonoBehaviour {
         BeforeNewLevel();
     }
 
-    void LockButtons()
+    void AreButtonsInteractable(bool areInterablable)
     {
         for (int i = 0; i < columns; i++)
         {
             for (int j = 0; j < rows; j++)
             {
-                buttonTextArray[i, j].GetComponentInParent<Button>().interactable = false;
+                buttonTextArray[i, j].GetComponentInParent<Button>().interactable = areInterablable;
             }
         }
     }
@@ -830,7 +821,7 @@ public class GameController : MonoBehaviour {
 
     public void RestartGame()
     {
-        StartGame();
+        StartGame(2, 2);
     }
 
     public void GoToTraining()
@@ -879,9 +870,7 @@ public class GameController : MonoBehaviour {
     void StartTraining(int boardColumns, int boardRows)
     {
         trainingGame = true;
-        BeforeWholeGame();
-        SetColumnsAndRows(boardColumns, boardRows);
-        StartGame();
+        StartGame(boardColumns, boardRows);
     }
 
     public void RestartCurrentLevel()
