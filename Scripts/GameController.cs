@@ -24,7 +24,7 @@ public class GameController : MonoBehaviour {
     private int board5x5limit = 15000;
     private Text[,] buttonTextArray;
     private Image[,] imageArray;
-    private List<int> numbers;
+    //private List<int> numbers;
     private List<int> numbersLeft;
     private System.Random rand;
     private List<Sprite> arrowsList;
@@ -150,7 +150,12 @@ public class GameController : MonoBehaviour {
         menuPanel.SetActive(isVisible);
     }
 
-    public void StartGame(int columns, int rows)
+    public void StartingGame()
+    {
+        StartGame(2, 2);
+    }
+
+    void StartGame(int columns, int rows)
     {
         BeforeWholeGame(columns, rows);
         BeforeNewLevel();
@@ -223,7 +228,7 @@ public class GameController : MonoBehaviour {
     void BeforeNewBoard()
     {
         numOfGamesOnCurrentLevel++;
-        Debug.Log("Current: " + numOfGamesOnCurrentLevel + ", min: " + minNumberOfGamesToNextLevel + ", max: " + maxNumberOfGamesToNextLevel + ", extra moves " + extraMovesForBigNumbers);
+        //Debug.Log("Current: " + numOfGamesOnCurrentLevel + ", min: " + minNumberOfGamesToNextLevel + ", max: " + maxNumberOfGamesToNextLevel + ", extra moves " + extraMovesForBigNumbers);
         InstantiateArrowsCopy();
         SetTime();
         PrepareArrowsToUse();
@@ -256,15 +261,15 @@ public class GameController : MonoBehaviour {
         }
         else if (columns == 4 && rows == 4)
         {
-            numOfGamesToBlockOneButton = 5;
+            numOfGamesToBlockOneButton = 4;
         }
         else if (columns == 5 && rows == 4)
         {
-            numOfGamesToBlockOneButton = 4;
+            numOfGamesToBlockOneButton = 2;
         }
         else if (columns == 5 && rows == 5)
         {
-            numOfGamesToBlockOneButton = 3;
+            numOfGamesToBlockOneButton = 1;
         }
     }
 
@@ -296,34 +301,52 @@ public class GameController : MonoBehaviour {
 
     private void InstantiateObjects()
     {
-        rand = new System.Random();
+        if (rand == null)
+        {
+            rand = new System.Random();
+        }
     }
 
     void InstantiateArrowsLists()
     {
-        arrowsList = new List<Sprite>(new Sprite[] { upArrow, upLeftArrow, upRightArrow, leftArrow, rightArrow, downArrow, downLeftArrow, downRightArrow });
-        arrowsUpDownLeftRight = new List<Sprite>(new Sprite[] { upArrow, leftArrow, rightArrow, downArrow });
-        arrowsDiagonal = new List<Sprite>(new Sprite[] { upLeftArrow, upRightArrow, downLeftArrow, downRightArrow });
-        arrowsToUse = new List<Sprite>();
+        if (arrowsToUse == null)
+        {
+            arrowsList = new List<Sprite>(new Sprite[] { upArrow, upLeftArrow, upRightArrow, leftArrow, rightArrow, downArrow, downLeftArrow, downRightArrow });
+            arrowsUpDownLeftRight = new List<Sprite>(new Sprite[] { upArrow, leftArrow, rightArrow, downArrow });
+            arrowsDiagonal = new List<Sprite>(new Sprite[] { upLeftArrow, upRightArrow, downLeftArrow, downRightArrow });
+            arrowsToUse = new List<Sprite>();
+        }
     }
 
     void InstantiateOtherLists()
     {
-        numbersLeft = new List<int>();
-        numbers = new List<int>();
-        gridsList = new List<GameObject>();
+        if (numbersLeft == null)
+        {
+            numbersLeft = new List<int>();
+            //numbers = new List<int>();
+            gridsList = new List<GameObject>();
+        }
     }
 
     void InstantiateArrowsCopy()
     {
-        arrowsListCopy = new List<Sprite>(new Sprite[] { upArrow, upLeftArrow, upRightArrow, leftArrow, rightArrow, downArrow, downLeftArrow, downRightArrow });
+        if (arrowsListCopy == null)
+        {
+            arrowsListCopy = new List<Sprite>(new Sprite[] { upArrow, upLeftArrow, upRightArrow, leftArrow, rightArrow, downArrow, downLeftArrow, downRightArrow });
+        } else
+        {
+            for (int i = 0; i < arrowsList.Count; i++)
+            {
+                arrowsListCopy.Add(arrowsList[i]);
+            }
+        }
     }
 
     private void InstantiateVariables()
     {
         buttonTextArray = new Text[columns, rows];
         imageArray = new Image[columns, rows];
-        AddNumbersToList(numbers);
+        //AddNumbersToList(numbers);
         AddNumbersToList(numbersLeft);
     }
 
@@ -821,7 +844,14 @@ public class GameController : MonoBehaviour {
 
     public void RestartGame()
     {
-        StartGame(2, 2);
+        DestroyGrids();
+        if (trainingGame)
+        {
+            StartGame(columns, rows);
+        } else
+        {
+            StartGame(2, 2);
+        }
     }
 
     public void GoToTraining()

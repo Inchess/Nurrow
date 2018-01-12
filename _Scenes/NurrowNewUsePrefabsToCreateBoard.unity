@@ -2272,7 +2272,6 @@ MonoBehaviour:
   gridSpacePrefab: {fileID: 1292936747608290, guid: 38416d5360085ee459bbadd042fb5a8a,
     type: 2}
   canvasObject: {fileID: 1541831921}
-  boardPanel: {fileID: 0}
   gameElements: {fileID: 833322841}
   timerValue: {fileID: 1985432975}
   numberOfMovesValue: {fileID: 744627097}
@@ -2590,7 +2589,7 @@ Prefab:
     - target: {fileID: 114340716303451826, guid: c8b3205f6ca652b41ad58ce612f8f983,
         type: 2}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
-      value: StartGame
+      value: StartingGame
       objectReference: {fileID: 0}
     - target: {fileID: 114340716303451826, guid: c8b3205f6ca652b41ad58ce612f8f983,
         type: 2}
