@@ -23,8 +23,6 @@ public class GameController : MonoBehaviour {
     private int board5x4limit = 6000;
     private int board5x5limit = 15000;
     private Text[,] buttonTextArray;
-    private Image[,] imageArray;
-    //private List<int> numbers;
     private List<int> numbersLeft;
     private System.Random rand;
     private List<Sprite> arrowsList;
@@ -42,11 +40,9 @@ public class GameController : MonoBehaviour {
     string downLeftArrowName = "Down Left Arrow";
     private int clickedButtonX;
     private int clickedButtonY;
-    private string clickedButtonArrowName;
     private int newPositionX;
     private int newPositionY;
     private string newButtonNumber;
-    private Sprite newImageArrow;
     private int numberOfMovesLeft = 120;
     public GameObject gridSpacePrefab;
     public GameObject canvasObject;
@@ -59,11 +55,11 @@ public class GameController : MonoBehaviour {
     private int numberOfDivisionsInHeight;
     private int gridAssetFromDivisions;
     private int textSize;
-    private int arrowSize;
     private int arrowMove;
     private int totalPoints;
     private float targetTime;
     private List<GameObject> gridsList;
+    private List<GameObject> gridsPrefabsList;
     private bool stillPlaying;
     private int pointsInThisRound;
     private int extraPointsForNumbers;
@@ -79,6 +75,7 @@ public class GameController : MonoBehaviour {
     private int pointsAtTheLevelBeginning;
     private int movesAtTheLevelBeginning;
     private int pointsToDecreaseForLevelRestart;
+    private float gridScaleForCurrentLevel;
     //GAME ELEMENTS
     public GameObject gameElements;
     public Text timerValue;
@@ -96,6 +93,15 @@ public class GameController : MonoBehaviour {
     public Text restartLevelButtonText;
     //TRAINING ELEMENTS
     public GameObject trainingPanel;
+    //GRIDS
+    public GameObject gridUp;
+    public GameObject gridUpRight;
+    public GameObject gridUpLeft;
+    public GameObject gridLeft;
+    public GameObject gridRight;
+    public GameObject gridDown;
+    public GameObject gridDownLeft;
+    public GameObject gridDownRight;
 
 
     private void Awake()
@@ -172,8 +178,6 @@ public class GameController : MonoBehaviour {
         this.columns = columns;
         this.rows = rows;
         InstantiateObjects();
-        InstantiateArrowsLists();
-        InstantiateOtherLists();
         SetArrowsNames();
         TimerActive(true);
     }
@@ -194,7 +198,6 @@ public class GameController : MonoBehaviour {
         InstantiateVariables();
         ModifyVariablesValues();
         CalculateNumberOfDivisions();
-        gridSize = CalculateGridSize();
         CalculateBoardSizes();
         numOfGamesOnCurrentLevel = 0;
         SetMinNumberOfGamesToNextLevel();
@@ -203,7 +206,6 @@ public class GameController : MonoBehaviour {
         numberOfBlockedButtons = 0;
         SaveValuesFromLevelBeginning();
         DecreasePointsForLevelRestart();
-        CheckCorrectRowsAndColumns();
         ModifySizeAndMovePrefabGridSize();
         CreateAndArrangeGrids();
         restartLevelButtonText.text = "Zacznij poziom " + columns + "x" + rows + " za " + pointsToDecreaseForLevelRestart + " punktów";
@@ -235,7 +237,6 @@ public class GameController : MonoBehaviour {
         CopyNumbersToNumbersLeftList();
         AddNumbersToButtons();
         ColorCorrectNumbersOnButtons();
-        AddArrowsToButtons();
         SetGameControllerReferenceOnButtons();
         if (columns >= 4 && rows >= 3 && numOfGamesOnCurrentLevel >= gameNumberFromWhichBlockingStarts)
         {
@@ -304,26 +305,12 @@ public class GameController : MonoBehaviour {
         if (rand == null)
         {
             rand = new System.Random();
-        }
-    }
-
-    void InstantiateArrowsLists()
-    {
-        if (arrowsToUse == null)
-        {
             arrowsList = new List<Sprite>(new Sprite[] { upArrow, upLeftArrow, upRightArrow, leftArrow, rightArrow, downArrow, downLeftArrow, downRightArrow });
             arrowsUpDownLeftRight = new List<Sprite>(new Sprite[] { upArrow, leftArrow, rightArrow, downArrow });
             arrowsDiagonal = new List<Sprite>(new Sprite[] { upLeftArrow, upRightArrow, downLeftArrow, downRightArrow });
             arrowsToUse = new List<Sprite>();
-        }
-    }
-
-    void InstantiateOtherLists()
-    {
-        if (numbersLeft == null)
-        {
             numbersLeft = new List<int>();
-            //numbers = new List<int>();
+            gridsPrefabsList = new List<GameObject>(new GameObject[] { gridUp, gridUpRight, gridUpLeft, gridLeft, gridRight, gridDown, gridDownLeft, gridDownRight });
             gridsList = new List<GameObject>();
         }
     }
@@ -345,8 +332,6 @@ public class GameController : MonoBehaviour {
     private void InstantiateVariables()
     {
         buttonTextArray = new Text[columns, rows];
-        imageArray = new Image[columns, rows];
-        //AddNumbersToList(numbers);
         AddNumbersToList(numbersLeft);
     }
 
@@ -374,23 +359,7 @@ public class GameController : MonoBehaviour {
     void SetTime()
     {
         targetTime = 20 + (rows + columns - 4) * 10;
-    }
-
-    private void CheckCorrectRowsAndColumns()
-    {
-        if (1 >= columns || columns >= 6)
-        {
-            throw new ArgumentException("Incorrect number of grids! Grids in row: " + columns + ", grids in column: " + rows);
-        }
-        else if (Math.Abs(rows - columns) > 1)
-        {
-            throw new ArgumentException("Too big difference between columns and rows! Grids in row: " + columns + ", grids in column: " + rows);
-        }
-        else if (rows > columns)
-        {
-            throw new ArgumentException("There are more grids in column than grids in row! Grids in row: " + columns + ", grids in column: " + rows);
-        }
-    }   
+    }  
     
     void SetGameControllerReferenceOnButtons()
     {
@@ -399,7 +368,6 @@ public class GameController : MonoBehaviour {
             for (int y = 0; y < rows; y++)
             {
                 buttonTextArray[x, y].GetComponentInParent<GridSpace>().SetGameControllerReference(this);
-                imageArray[x, y].GetComponentInParent<GridSpace>().SetGameControllerReference(this);
             }
         }
     }
@@ -410,25 +378,21 @@ public class GameController : MonoBehaviour {
         {
             gridAssetFromDivisions = 20;
             textSize = 90;
-            arrowSize = 80;
             arrowMove = 70;
         } else if (columns == 3)
         {
             gridAssetFromDivisions = 14;
             textSize = 70;
-            arrowSize = 40;
             arrowMove = 45;
         } else if (columns == 4)
         {
             gridAssetFromDivisions = 7;
             textSize = 60;
-            arrowSize = 35;
             arrowMove = 40;
         } else if (columns == 5)
         {
             gridAssetFromDivisions = 1;
             textSize = 40;
-            arrowSize = 35;
             arrowMove = 30;
         } else
         {
@@ -472,15 +436,6 @@ public class GameController : MonoBehaviour {
         numberOfDivisionsInHeight = columns - 1;
     }
 
-    private int CalculateGridSize()
-    {
-        int totalWidthForGrids = maxBoardSize - (numberOfDivisionsInWidth * divisionLineWidth) - (rows * 2 * gridAssetFromDivisions);
-        int gridWidth = totalWidthForGrids / rows;
-        int totalHeightForGrids = maxBoardSize - (numberOfDivisionsInHeight * divisionLineWidth) - (columns * 2 * gridAssetFromDivisions);
-        int gridHeigth = totalHeightForGrids / columns;
-        return Math.Min(gridHeigth, gridWidth);
-    }
-
     private void ModifySizeAndMovePrefabGridSize()
     {
         RectTransform gridPrefabRectTransform = gridSpacePrefab.GetComponent<RectTransform>();
@@ -499,19 +454,25 @@ public class GameController : MonoBehaviour {
         {
             for (int y = 0; y < rows; y++)
             {
-                GameObject newSmoke = Instantiate(gridSpacePrefab, new Vector3(0, 0, 0), Quaternion.Euler(0, 0, 0)) as GameObject;
-                newSmoke.name = "Grid" + x + y;
-                newSmoke.transform.SetParent(canvasObject.transform, false);
-                newSmoke.transform.localScale = new Vector3(1, 1, 1);
-                RectTransform gridPrefabRectTransform = newSmoke.GetComponent<RectTransform>();
+                GameObject newGrid = Instantiate(gridUpLeft, new Vector3(0, 0, 0), Quaternion.Euler(0, 0, 0)) as GameObject;
+                newGrid.name = "Grid" + x + y;
+                newGrid.transform.SetParent(canvasObject.transform, false);
+                RectTransform gridPrefabRectTransform = newGrid.GetComponent<RectTransform>();
                 int gridsAsset = gridSize + 2 * gridAssetFromDivisions + divisionLineWidth;
                 gridPrefabRectTransform.anchoredPosition = new Vector2((x * gridsAsset + gridsAsset/2) - (boardSizeWidth / 2), (y * gridsAsset + gridsAsset / 2) - (boardSizeHeight / 2));
-                buttonTextArray[x, y] = newSmoke.GetComponentInChildren<Text>();
+                buttonTextArray[x, y] = newGrid.GetComponentInChildren<Text>();
                 buttonTextArray[x, y].fontSize = textSize;
-                imageArray[x, y] = newSmoke.GetComponentsInChildren<Image>()[1];
-                gridsList.Add(newSmoke);
+                gridsList.Add(newGrid);
             }
         }
+        RectTransform a = gridUpLeft.GetComponent<RectTransform>();
+
+        if (gridSize == 0)
+        {
+            gridSize = (int)a.rect.width;
+        }
+        gridUpLeft.transform.localScale = new Vector3(20, 20, 1);
+        Debug.Log(gridSize);
     }
 
     void AddNumbersToButtons()
@@ -531,21 +492,6 @@ public class GameController : MonoBehaviour {
         }
     }
 
-    void AddArrowsToButtons()
-    {
-        for (int i = 0; i < columns; i++)
-        {
-            for (int j = 0; j < rows; j++)
-            {
-                int index = rand.Next(0, arrowsToUse.Count);
-                imageArray[i, j].sprite = arrowsToUse[index];
-                imageArray[i, j].rectTransform.sizeDelta = new Vector2(arrowSize, arrowSize);
-                SetArrowLocation(arrowsToUse[index], imageArray[i, j]);
-                arrowsToUse.RemoveAt(index);
-            }
-        }
-    }
-
     void SetArrowLocation(Sprite arrow, Image image)
     {
         int[] arrowTransition = ChangeLocation(arrow.name, arrowMove);
@@ -557,8 +503,6 @@ public class GameController : MonoBehaviour {
         string number = button.GetComponentInChildren<Text>().text;
         Sprite arrow = button.GetComponentsInChildren<Image>()[1].sprite;
         FindButtonIndexes(number);
-        ChangeButtonsPlaces(number);
-        ChangeArrowsPlaces(arrow);
         CheckIfGameFinished(button);
     }
 
@@ -570,32 +514,11 @@ public class GameController : MonoBehaviour {
             {
                 if (buttonTextArray[i, j].text == number)
                 {
-                    clickedButtonArrowName = imageArray[i, j].sprite.name;
                     clickedButtonX = i;
                     clickedButtonY = j;
                 }
             }
         }
-    }
-
-    void ChangeButtonsPlaces(string clickedButtonNumber)
-    {
-        int moveValue = 1;
-        int[] arrowTransition = ChangeLocation(clickedButtonArrowName, moveValue);
-        newPositionX = (clickedButtonX + arrowTransition[0] + columns) % columns;
-        newPositionY = (clickedButtonY + arrowTransition[1] + rows) % rows;
-        newButtonNumber = buttonTextArray[newPositionX, newPositionY].text;
-        newImageArrow = imageArray[newPositionX, newPositionY].sprite;
-        buttonTextArray[newPositionX, newPositionY].text = clickedButtonNumber;
-        buttonTextArray[clickedButtonX, clickedButtonY].text = newButtonNumber;
-    }
-
-    void ChangeArrowsPlaces(Sprite arrow)
-    {
-        imageArray[newPositionX, newPositionY].sprite = arrow;
-        imageArray[clickedButtonX, clickedButtonY].sprite = newImageArrow;
-        SetArrowLocation(arrow, imageArray[newPositionX, newPositionY]);
-        SetArrowLocation(newImageArrow, imageArray[clickedButtonX, clickedButtonY]);
     }
 
     void CheckIfGameFinished(Button button)
@@ -925,6 +848,7 @@ public class GameController : MonoBehaviour {
         if (columns == 2 && rows == 2)
         {
             pointsToDecreaseForLevelRestart = 50;
+            gridScaleForCurrentLevel = 2.3f;
         } else if (columns == 3 && rows == 2)
         {
             pointsToDecreaseForLevelRestart = 150;
