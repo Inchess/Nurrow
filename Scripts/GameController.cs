@@ -51,11 +51,8 @@ public class GameController : MonoBehaviour {
     private int boardSizeWidth;
     private int gridSize;
     private int divisionLineWidth = 0;
-    private int numberOfDivisionsInWidth;
-    private int numberOfDivisionsInHeight;
     private int gridAssetFromDivisions;
     private int textSize;
-    private int arrowMove;
     private int totalPoints;
     private float targetTime;
     private List<GameObject> gridsList;
@@ -76,6 +73,7 @@ public class GameController : MonoBehaviour {
     private int movesAtTheLevelBeginning;
     private int pointsToDecreaseForLevelRestart;
     private float gridScaleForCurrentLevel;
+    public GameObject boardPanel;
     //GAME ELEMENTS
     public GameObject gameElements;
     public Text timerValue;
@@ -196,16 +194,10 @@ public class GameController : MonoBehaviour {
     void BeforeNewLevel()
     {
         InstantiateVariables();
-        ModifyVariablesValues();
-        CalculateNumberOfDivisions();
-        CalculateBoardSizes();
-        numOfGamesOnCurrentLevel = 0;
-        SetMinNumberOfGamesToNextLevel();
-        SetMaxNumberOfGamesToNextLevel();
-        extraMovesForBigNumbers = 0;
-        numberOfBlockedButtons = 0;
+        SetNumberOfGamesToNextLevel();
         SaveValuesFromLevelBeginning();
-        DecreasePointsForLevelRestart();
+        ModifyValuesForCurrentLevel();
+        gridSize = (int)(100 * gridScaleForCurrentLevel);
         ModifySizeAndMovePrefabGridSize();
         CreateAndArrangeGrids();
         restartLevelButtonText.text = "Zacznij poziom " + columns + "x" + rows + " za " + pointsToDecreaseForLevelRestart + " punktów";
@@ -217,13 +209,9 @@ public class GameController : MonoBehaviour {
         pointsAtTheLevelBeginning = totalPoints;
     }
 
-    void SetMinNumberOfGamesToNextLevel()
+    void SetNumberOfGamesToNextLevel()
     {
         minNumberOfGamesToNextLevel = Math.Max(columns, rows);
-    }
-
-    void SetMaxNumberOfGamesToNextLevel()
-    {
         maxNumberOfGamesToNextLevel = columns + rows;
     }
 
@@ -312,6 +300,9 @@ public class GameController : MonoBehaviour {
             numbersLeft = new List<int>();
             gridsPrefabsList = new List<GameObject>(new GameObject[] { gridUp, gridUpRight, gridUpLeft, gridLeft, gridRight, gridDown, gridDownLeft, gridDownRight });
             gridsList = new List<GameObject>();
+            numOfGamesOnCurrentLevel = 0;
+            extraMovesForBigNumbers = 0;
+            numberOfBlockedButtons = 0;
         }
     }
 
@@ -372,34 +363,6 @@ public class GameController : MonoBehaviour {
         }
     }
 
-    private void ModifyVariablesValues()
-    {
-        if (columns == 2)
-        {
-            gridAssetFromDivisions = 20;
-            textSize = 90;
-            arrowMove = 70;
-        } else if (columns == 3)
-        {
-            gridAssetFromDivisions = 14;
-            textSize = 70;
-            arrowMove = 45;
-        } else if (columns == 4)
-        {
-            gridAssetFromDivisions = 7;
-            textSize = 60;
-            arrowMove = 40;
-        } else if (columns == 5)
-        {
-            gridAssetFromDivisions = 1;
-            textSize = 40;
-            arrowMove = 30;
-        } else
-        {
-            throw new Exception("Incorrect number of columns: " + columns);
-        }
-    }
-
     void PrepareArrowsToUse()
     {
         int numOfButtons = columns * rows;
@@ -429,23 +392,12 @@ public class GameController : MonoBehaviour {
             }
         }
     }
-
-    private void CalculateNumberOfDivisions()
-    {
-        numberOfDivisionsInWidth = rows - 1;
-        numberOfDivisionsInHeight = columns - 1;
-    }
+   
 
     private void ModifySizeAndMovePrefabGridSize()
     {
-        RectTransform gridPrefabRectTransform = gridSpacePrefab.GetComponent<RectTransform>();
-        gridPrefabRectTransform.sizeDelta = new Vector2(gridSize, gridSize);
-    }
-
-    private void CalculateBoardSizes()
-    {
-        boardSizeWidth = columns * gridSize + 2 * columns * gridAssetFromDivisions + numberOfDivisionsInHeight * divisionLineWidth;
-        boardSizeHeight = rows * gridSize + 2 * rows * gridAssetFromDivisions + numberOfDivisionsInWidth * divisionLineWidth;
+        //RectTransform gridPrefabRectTransform = gridSpacePrefab.GetComponent<RectTransform>();
+        //gridPrefabRectTransform.sizeDelta = new Vector2(gridSize, gridSize);
     }
 
     private void CreateAndArrangeGrids()
@@ -454,25 +406,24 @@ public class GameController : MonoBehaviour {
         {
             for (int y = 0; y < rows; y++)
             {
-                GameObject newGrid = Instantiate(gridUpLeft, new Vector3(0, 0, 0), Quaternion.Euler(0, 0, 0)) as GameObject;
+                GameObject newGrid = Instantiate(gridUp, new Vector3(0, 0, 0), Quaternion.Euler(0, 0, 0)) as GameObject;
                 newGrid.name = "Grid" + x + y;
                 newGrid.transform.SetParent(canvasObject.transform, false);
-                RectTransform gridPrefabRectTransform = newGrid.GetComponent<RectTransform>();
-                int gridsAsset = gridSize + 2 * gridAssetFromDivisions + divisionLineWidth;
-                gridPrefabRectTransform.anchoredPosition = new Vector2((x * gridsAsset + gridsAsset/2) - (boardSizeWidth / 2), (y * gridsAsset + gridsAsset / 2) - (boardSizeHeight / 2));
+                newGrid.transform.localScale = new Vector3(gridScaleForCurrentLevel, gridScaleForCurrentLevel, 1);
+               // RectTransform gridPrefabRectTransform = newGrid.GetComponent<RectTransform>();
+               // int gridsAsset = gridSize + 2 * gridAssetFromDivisions + divisionLineWidth;
+                //gridPrefabRectTransform.anchoredPosition = new Vector2((x * gridsAsset + gridsAsset / 2) - (boardSizeWidth / 2), (y * gridsAsset + gridsAsset / 2) - (boardSizeHeight / 2));
                 buttonTextArray[x, y] = newGrid.GetComponentInChildren<Text>();
                 buttonTextArray[x, y].fontSize = textSize;
                 gridsList.Add(newGrid);
             }
         }
-        RectTransform a = gridUpLeft.GetComponent<RectTransform>();
-
-        if (gridSize == 0)
-        {
-            gridSize = (int)a.rect.width;
-        }
-        gridUpLeft.transform.localScale = new Vector3(20, 20, 1);
         Debug.Log(gridSize);
+    }
+
+    private void MoveGridToCorrectPlace(GameObject newGrid)
+    {
+
     }
 
     void AddNumbersToButtons()
@@ -490,12 +441,6 @@ public class GameController : MonoBehaviour {
                 numbersLeft.RemoveAt(randomNumber);
             }
         }
-    }
-
-    void SetArrowLocation(Sprite arrow, Image image)
-    {
-        int[] arrowTransition = ChangeLocation(arrow.name, arrowMove);
-        image.rectTransform.anchoredPosition = new Vector2(arrowTransition[0], arrowTransition[1]);
     }
 
     public void MoveNumbersOnClick(Text buttonText, Button button)
@@ -843,30 +788,44 @@ public class GameController : MonoBehaviour {
         ElementsAtBoardEndVisible(false);
     }
 
-    void DecreasePointsForLevelRestart()
+    void ModifyValuesForCurrentLevel()
     {
         if (columns == 2 && rows == 2)
         {
             pointsToDecreaseForLevelRestart = 50;
+            gridAssetFromDivisions = 20;
+            textSize = 90;
             gridScaleForCurrentLevel = 2.3f;
         } else if (columns == 3 && rows == 2)
         {
             pointsToDecreaseForLevelRestart = 150;
+            gridAssetFromDivisions = 20;
+            textSize = 90;
         } else if (columns == 3 && rows == 3)
         {
             pointsToDecreaseForLevelRestart = 300;
+            gridAssetFromDivisions = 20;
+            textSize = 90;
         } else if (columns == 4 && rows == 3)
         {
             pointsToDecreaseForLevelRestart = 500;
+            gridAssetFromDivisions = 14;
+            textSize = 70;
         } else if (columns == 4 && rows == 4)
         {
             pointsToDecreaseForLevelRestart = 750;
+            gridAssetFromDivisions = 14;
+            textSize = 70;
         } else if (columns == 5 && rows == 4)
         {
             pointsToDecreaseForLevelRestart = 1050;
+            gridAssetFromDivisions = 1;
+            textSize = 40;
         } else if (columns == 5 && rows == 5)
         {
             pointsToDecreaseForLevelRestart = 1400;
+            gridAssetFromDivisions = 1;
+            textSize = 40;
         }
     }
 
