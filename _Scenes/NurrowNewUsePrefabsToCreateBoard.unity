@@ -374,7 +374,7 @@ Prefab:
     - target: {fileID: 114987034148143120, guid: a345e975e5a3b494e82fdb0ade6bb2be,
         type: 2}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
-      value: GoBackToMenu
+      value: GoToMenu
       objectReference: {fileID: 0}
     - target: {fileID: 224510996965701212, guid: a345e975e5a3b494e82fdb0ade6bb2be,
         type: 2}

@@ -47,7 +47,8 @@ public class GameController : MonoBehaviour {
     private int newPositionY;
     private string newButtonNumber;
     private Sprite newImageArrow;
-    private int numberOfMovesLeft = 120;
+    private int startingNumberOfMoves = 120;
+    private int numberOfMovesLeft;
     public GameObject gridSpacePrefab;
     public GameObject canvasObject;
     private int maxBoardSize = 512;
@@ -100,6 +101,7 @@ public class GameController : MonoBehaviour {
 
     private void Awake()
     {
+        InstantiateObjects();
         GoToMenu();
     }
 
@@ -117,37 +119,12 @@ public class GameController : MonoBehaviour {
 
     public void GoToMenu()
     {
+        DestroyGrids();
         trainingGame = false;
         MenuVisible(true);
         TrainingPanelVisible(false);
         GameElementsVisible(false);
         ElementsAtBoardEndVisible(false);
-    }
-
-    public void GoBackToMenu()
-    {
-        DestroyGrids();
-        GoToMenu();
-    }
-
-    void TrainingPanelVisible(bool isVisible)
-    {
-        trainingPanel.SetActive(isVisible);
-    }
-
-    void GameElementsVisible(bool isVisible)
-    {
-        gameElements.SetActive(isVisible);
-    }
-
-    void ElementsAtBoardEndVisible(bool isVisible)
-    {
-        elementsAtBoardEnd.SetActive(isVisible);
-    }
-
-    void MenuVisible(bool isVisible)
-    {
-        menuPanel.SetActive(isVisible);
     }
 
     public void StartingGame()
@@ -171,9 +148,7 @@ public class GameController : MonoBehaviour {
     {
         this.columns = columns;
         this.rows = rows;
-        InstantiateObjects();
-        InstantiateArrowsLists();
-        InstantiateOtherLists();
+        numberOfMovesLeft = startingNumberOfMoves;
         SetArrowsNames();
         TimerActive(true);
     }
@@ -182,10 +157,8 @@ public class GameController : MonoBehaviour {
     {
         pointsValue.text = "0";
         totalPoints = 0;
-        numberOfMovesValue.text = numberOfMovesLeft.ToString();
-        SetTime();
+        numberOfMovesValue.text = startingNumberOfMoves.ToString();
         timerValue.text = targetTime.ToString();
-        extraMovesForBigNumbers = 0;
     }
 
 
@@ -196,14 +169,9 @@ public class GameController : MonoBehaviour {
         CalculateNumberOfDivisions();
         gridSize = CalculateGridSize();
         CalculateBoardSizes();
-        numOfGamesOnCurrentLevel = 0;
-        SetMinNumberOfGamesToNextLevel();
-        SetMaxNumberOfGamesToNextLevel();
-        extraMovesForBigNumbers = 0;
-        numberOfBlockedButtons = 0;
+        SetNumberOfGamesToNextLevel();
         SaveValuesFromLevelBeginning();
         DecreasePointsForLevelRestart();
-        CheckCorrectRowsAndColumns();
         ModifySizeAndMovePrefabGridSize();
         CreateAndArrangeGrids();
         restartLevelButtonText.text = "Zacznij poziom " + columns + "x" + rows + " za " + pointsToDecreaseForLevelRestart + " punktów";
@@ -215,22 +183,17 @@ public class GameController : MonoBehaviour {
         pointsAtTheLevelBeginning = totalPoints;
     }
 
-    void SetMinNumberOfGamesToNextLevel()
+    void SetNumberOfGamesToNextLevel()
     {
         minNumberOfGamesToNextLevel = Math.Max(columns, rows);
-    }
-
-    void SetMaxNumberOfGamesToNextLevel()
-    {
         maxNumberOfGamesToNextLevel = columns + rows;
     }
 
     void BeforeNewBoard()
     {
         numOfGamesOnCurrentLevel++;
-        //Debug.Log("Current: " + numOfGamesOnCurrentLevel + ", min: " + minNumberOfGamesToNextLevel + ", max: " + maxNumberOfGamesToNextLevel + ", extra moves " + extraMovesForBigNumbers);
         InstantiateArrowsCopy();
-        SetTime();
+        SetTimer();
         PrepareArrowsToUse();
         CopyNumbersToNumbersLeftList();
         AddNumbersToButtons();
@@ -304,26 +267,11 @@ public class GameController : MonoBehaviour {
         if (rand == null)
         {
             rand = new System.Random();
-        }
-    }
-
-    void InstantiateArrowsLists()
-    {
-        if (arrowsToUse == null)
-        {
             arrowsList = new List<Sprite>(new Sprite[] { upArrow, upLeftArrow, upRightArrow, leftArrow, rightArrow, downArrow, downLeftArrow, downRightArrow });
             arrowsUpDownLeftRight = new List<Sprite>(new Sprite[] { upArrow, leftArrow, rightArrow, downArrow });
             arrowsDiagonal = new List<Sprite>(new Sprite[] { upLeftArrow, upRightArrow, downLeftArrow, downRightArrow });
             arrowsToUse = new List<Sprite>();
-        }
-    }
-
-    void InstantiateOtherLists()
-    {
-        if (numbersLeft == null)
-        {
             numbersLeft = new List<int>();
-            //numbers = new List<int>();
             gridsList = new List<GameObject>();
         }
     }
@@ -335,6 +283,7 @@ public class GameController : MonoBehaviour {
             arrowsListCopy = new List<Sprite>(new Sprite[] { upArrow, upLeftArrow, upRightArrow, leftArrow, rightArrow, downArrow, downLeftArrow, downRightArrow });
         } else
         {
+            arrowsListCopy.Clear();
             for (int i = 0; i < arrowsList.Count; i++)
             {
                 arrowsListCopy.Add(arrowsList[i]);
@@ -346,8 +295,10 @@ public class GameController : MonoBehaviour {
     {
         buttonTextArray = new Text[columns, rows];
         imageArray = new Image[columns, rows];
-        //AddNumbersToList(numbers);
         AddNumbersToList(numbersLeft);
+        numOfGamesOnCurrentLevel = 0;
+        extraMovesForBigNumbers = 0;
+        numberOfBlockedButtons = 0;
     }
 
     private void AddNumbersToList(List<int> list)
@@ -371,26 +322,10 @@ public class GameController : MonoBehaviour {
         downRightArrow.name = downRightArrowName;
     }
 
-    void SetTime()
+    void SetTimer()
     {
         targetTime = 20 + (rows + columns - 4) * 10;
     }
-
-    private void CheckCorrectRowsAndColumns()
-    {
-        if (1 >= columns || columns >= 6)
-        {
-            throw new ArgumentException("Incorrect number of grids! Grids in row: " + columns + ", grids in column: " + rows);
-        }
-        else if (Math.Abs(rows - columns) > 1)
-        {
-            throw new ArgumentException("Too big difference between columns and rows! Grids in row: " + columns + ", grids in column: " + rows);
-        }
-        else if (rows > columns)
-        {
-            throw new ArgumentException("There are more grids in column than grids in row! Grids in row: " + columns + ", grids in column: " + rows);
-        }
-    }   
     
     void SetGameControllerReferenceOnButtons()
     {
@@ -438,7 +373,7 @@ public class GameController : MonoBehaviour {
 
     void PrepareArrowsToUse()
     {
-        int numOfButtons = columns * rows;
+        int numOfButtons = columns * rows - 2;
         int allArrowsOccurrence = numOfButtons / arrowsList.Count;
         int extraArrows = numOfButtons % arrowsList.Count;
         for (int i = 0; i < allArrowsOccurrence; i++)
@@ -952,6 +887,26 @@ public class GameController : MonoBehaviour {
         {
             Destroy(gridsList[i]);
         }
+    }
+
+    void TrainingPanelVisible(bool isVisible)
+    {
+        trainingPanel.SetActive(isVisible);
+    }
+
+    void GameElementsVisible(bool isVisible)
+    {
+        gameElements.SetActive(isVisible);
+    }
+
+    void ElementsAtBoardEndVisible(bool isVisible)
+    {
+        elementsAtBoardEnd.SetActive(isVisible);
+    }
+
+    void MenuVisible(bool isVisible)
+    {
+        menuPanel.SetActive(isVisible);
     }
 
 }
