@@ -17,6 +17,7 @@ public class GameController : MonoBehaviour {
     public Sprite downLeftArrow;
     private int columns = 2;
     private int rows = 2;
+    private int nextLevelPointsLimit;
     private int board3x2limit = 200;
     private int board3x3limit = 600;
     private int board4x3limit = 1500;
@@ -122,6 +123,11 @@ public class GameController : MonoBehaviour {
     {
         DestroyGrids();
         trainingGame = false;
+        ShowOnlyMenu();
+    }
+
+    void ShowOnlyMenu()
+    {
         MenuVisible(true);
         TrainingPanelVisible(false);
         GameElementsVisible(false);
@@ -138,11 +144,16 @@ public class GameController : MonoBehaviour {
         BeforeWholeGame(columns, rows);
         BeforeNewLevel();
         BeforeNewBoard();
+        ShowOnlyGameElements();
+        ResetElementsAtBoardEnd();
+    }
+
+    void ShowOnlyGameElements()
+    {
         MenuVisible(false);
         GameElementsVisible(true);
         ElementsAtBoardEndVisible(false);
         TrainingPanelVisible(false);
-        ResetElementsAtBoardEnd();
     }
 
     void BeforeWholeGame(int columns, int rows)
@@ -172,7 +183,6 @@ public class GameController : MonoBehaviour {
         CalculateBoardSizes();
         SetNumberOfGamesToNextLevel();
         SaveValuesFromLevelBeginning();
-        DecreasePointsForLevelRestart();
         ModifySizeAndMovePrefabGridSize();
         CreateAndArrangeGrids();
         restartLevelButtonText.text = "Zacznij poziom " + columns + "x" + rows + " za " + pointsToDecreaseForLevelRestart + " punktów";
@@ -192,6 +202,7 @@ public class GameController : MonoBehaviour {
 
     void BeforeNewBoard()
     {
+        extraMovesForBigNumbers = 0;
         numOfGamesOnCurrentLevel++;
         InstantiateArrowsCopy();
         SetTimer();
@@ -201,6 +212,7 @@ public class GameController : MonoBehaviour {
         ColorCorrectNumbersOnButtons();
         AddArrowsToButtons();
         SetGameControllerReferenceOnButtons();
+        AreButtonsInteractable(true);
         if (columns >= 4 && rows >= 3 && numOfGamesOnCurrentLevel >= gameNumberFromWhichBlockingStarts)
         {
             StartBlockingButtons();
@@ -297,7 +309,6 @@ public class GameController : MonoBehaviour {
         buttonTextArray = new Text[columns, rows];
         imageArray = new Image[columns, rows];
         numOfGamesOnCurrentLevel = 0;
-        extraMovesForBigNumbers = 0;
         numberOfBlockedButtons = 0;
     }
 
@@ -335,10 +346,13 @@ public class GameController : MonoBehaviour {
             {
                 buttonTextArray[x, y].GetComponentInParent<GridSpace>().SetGameControllerReference(this);
                 imageArray[x, y].GetComponentInParent<GridSpace>().SetGameControllerReference(this);
+                ColorBlock cb = buttonTextArray[x, y].GetComponentInParent<Button>().colors;
+                cb.disabledColor = Color.grey;
+                buttonTextArray[x, y].GetComponentInParent<Button>().colors = cb;
             }
         }
     }
-
+    
     private void ModifyVariablesValues()
     {
         if (columns == 2)
@@ -347,27 +361,55 @@ public class GameController : MonoBehaviour {
             textSize = 90;
             arrowSize = 80;
             arrowMove = 70;
+            pointsToDecreaseForLevelRestart = 50;
+            nextLevelPointsLimit = board3x2limit;
         } else if (columns == 3)
         {
             gridAssetFromDivisions = 14;
             textSize = 70;
             arrowSize = 40;
             arrowMove = 45;
+            if (rows == 2)
+            {
+                pointsToDecreaseForLevelRestart = 150;
+                nextLevelPointsLimit = board3x3limit;
+            }
+            else if (rows == 3)
+            {
+                pointsToDecreaseForLevelRestart = 300;
+                nextLevelPointsLimit = board4x3limit;
+            }
         } else if (columns == 4)
         {
             gridAssetFromDivisions = 7;
             textSize = 60;
             arrowSize = 35;
             arrowMove = 40;
+            if (rows == 3)
+            {
+                pointsToDecreaseForLevelRestart = 500;
+                nextLevelPointsLimit = board4x4limit;
+            }
+            else if (rows == 4)
+            {
+                pointsToDecreaseForLevelRestart = 750;
+                nextLevelPointsLimit = board5x4limit;
+            }
         } else if (columns == 5)
         {
             gridAssetFromDivisions = 1;
             textSize = 40;
             arrowSize = 35;
             arrowMove = 30;
-        } else
-        {
-            throw new Exception("Incorrect number of columns: " + columns);
+            if (rows == 4)
+            {
+                pointsToDecreaseForLevelRestart = 1050;
+                nextLevelPointsLimit = board5x5limit;
+            }
+            else if (rows == 5)
+            {
+                pointsToDecreaseForLevelRestart = 1400;
+            }
         }
     }
 
@@ -585,6 +627,8 @@ public class GameController : MonoBehaviour {
 
     void ColorCorrectNumbersDisabledColor()
     {
+        extraPointsForNumbers = 0;
+        howManyExtraNumbers = 0;
         Action work = delegate
         {
             for (int y = (rows - 1); y >= 0; y--)
@@ -631,20 +675,17 @@ public class GameController : MonoBehaviour {
         b.colors = cb;
     }
 
-    void AfterEachBoard()
+    public void AfterEachBoard()
     {
         numberOfMovesValue.text = numberOfMovesLeft.ToString();
         if (!trainingGame)
         {
             CheckIfNewLevel();
         }
-        BeforeNewBoard();
         TimerActive(true);
-        extraPointsForNumbers = 0;
-        extraMovesForBigNumbers = 0;
-        howManyExtraNumbers = 0;
         ElementsAtBoardEndVisible(false);
         AreButtonsInteractable(true);
+        BeforeNewBoard();
     }
 
     void CalculateNumberOfExtraMoves()
@@ -672,29 +713,15 @@ public class GameController : MonoBehaviour {
     {
         if (numOfGamesOnCurrentLevel >= minNumberOfGamesToNextLevel)
         {
-            if (numOfGamesOnCurrentLevel >= maxNumberOfGamesToNextLevel || board3x2limit < totalPoints && totalPoints <= board3x3limit)
+            if (numOfGamesOnCurrentLevel >= maxNumberOfGamesToNextLevel || totalPoints > nextLevelPointsLimit)
             {
-                SetColumnsAndRows(3, 2);
-            }
-            else if (numOfGamesOnCurrentLevel >= maxNumberOfGamesToNextLevel || board3x3limit < totalPoints && totalPoints <= board4x3limit)
-            {
-                SetColumnsAndRows(3, 3);
-            }
-            else if (numOfGamesOnCurrentLevel >= maxNumberOfGamesToNextLevel || board4x3limit < totalPoints && totalPoints <= board4x4limit)
-            {
-                SetColumnsAndRows(4, 3);
-            }
-            else if (numOfGamesOnCurrentLevel >= maxNumberOfGamesToNextLevel || board4x4limit < totalPoints && totalPoints <= board5x4limit)
-            {
-                SetColumnsAndRows(4, 4);
-            }
-            else if (numOfGamesOnCurrentLevel >= maxNumberOfGamesToNextLevel || board5x4limit < totalPoints && totalPoints <= board5x5limit)
-            {
-                SetColumnsAndRows(5, 4);
-            }
-            else if (numOfGamesOnCurrentLevel >= maxNumberOfGamesToNextLevel || board5x5limit < totalPoints)
-            {
-                SetColumnsAndRows(5, 5);
+                if (columns == rows)
+                {
+                    SetColumnsAndRows((columns + 1), rows);
+                } else
+                {
+                    SetColumnsAndRows(columns, (rows + 1));
+                }
             }
         }
     }
@@ -761,11 +788,6 @@ public class GameController : MonoBehaviour {
         return new int[] { xChange, yChange };
     }
 
-    public void NextBoard()
-    {
-        AfterEachBoard();
-    }
-
     public void RestartGame()
     {
         DestroyGrids();
@@ -779,6 +801,11 @@ public class GameController : MonoBehaviour {
     }
 
     public void GoToTraining()
+    {
+        ShowOnlyTrainingPanel();
+    }
+
+    void ShowOnlyTrainingPanel()
     {
         MenuVisible(false);
         TrainingPanelVisible(true);
@@ -842,32 +869,6 @@ public class GameController : MonoBehaviour {
         BeforeNewBoard();
         timerValue.text = targetTime.ToString();
         ElementsAtBoardEndVisible(false);
-    }
-
-    void DecreasePointsForLevelRestart()
-    {
-        if (columns == 2 && rows == 2)
-        {
-            pointsToDecreaseForLevelRestart = 50;
-        } else if (columns == 3 && rows == 2)
-        {
-            pointsToDecreaseForLevelRestart = 150;
-        } else if (columns == 3 && rows == 3)
-        {
-            pointsToDecreaseForLevelRestart = 300;
-        } else if (columns == 4 && rows == 3)
-        {
-            pointsToDecreaseForLevelRestart = 500;
-        } else if (columns == 4 && rows == 4)
-        {
-            pointsToDecreaseForLevelRestart = 750;
-        } else if (columns == 5 && rows == 4)
-        {
-            pointsToDecreaseForLevelRestart = 1050;
-        } else if (columns == 5 && rows == 5)
-        {
-            pointsToDecreaseForLevelRestart = 1400;
-        }
     }
 
     void DestroyGrids()
