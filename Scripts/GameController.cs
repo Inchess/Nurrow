@@ -484,6 +484,8 @@ public class GameController : MonoBehaviour {
         FindButtonIndexes(number);
         ChangeButtonsPlaces(number);
         ChangeArrowsPlaces(arrow);
+        ColorActiveButtons(clickedButtonX, clickedButtonY, buttonTextArray[clickedButtonX, clickedButtonY].text);
+        ColorActiveButtons(newPositionX, newPositionY, buttonTextArray[newPositionX, newPositionY].text);
         CheckIfGameFinished(button);
     }
 
@@ -519,7 +521,6 @@ public class GameController : MonoBehaviour {
     {
         numberOfMovesLeft--;
         numberOfMovesValue.text = numberOfMovesLeft.ToString();
-        ColorCorrectNumbersOnButtons();
         if (numberOfMovesLeft <= 0)
         {
             FinishGame();
@@ -569,6 +570,17 @@ public class GameController : MonoBehaviour {
                     ChangeColor(buttonTextArray[x, y], Color.white);
                 }
             }
+        }
+    }
+
+    void ColorActiveButtons(int x, int y, string buttonNumber)
+    {
+        if (Int32.Parse(buttonNumber) == ((x + 1) + Math.Abs(y - (rows - 1)) * columns))
+        {
+            ChangeColor(buttonTextArray[x, y], Color.green);
+        } else
+        {
+            ChangeColor(buttonTextArray[x, y], Color.white);
         }
     }
 
