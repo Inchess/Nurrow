@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using System;
+using UnityEngine.EventSystems;
 
 public class GameController : MonoBehaviour {
 
@@ -476,7 +477,7 @@ public class GameController : MonoBehaviour {
         image.rectTransform.anchoredPosition = new Vector2(arrowTransition[0], arrowTransition[1]);
     }
 
-    public void MoveNumbersOnClick(Text buttonText, Button button)
+    public void MoveNumbersOnClick(Button button)
     {
         string number = button.GetComponentInChildren<Text>().text;
         Sprite arrow = button.GetComponentsInChildren<Image>()[1].sprite;
@@ -488,18 +489,10 @@ public class GameController : MonoBehaviour {
 
     void FindButtonIndexes(string number)
     {
-        for (int i = 0; i < columns; i++)
-        {
-            for (int j = 0; j < rows; j++)
-            {
-                if (buttonTextArray[i, j].text == number)
-                {
-                    clickedButtonArrowName = imageArray[i, j].sprite.name;
-                    clickedButtonX = i;
-                    clickedButtonY = j;
-                }
-            }
-        }
+        String buttonName = EventSystem.current.currentSelectedGameObject.name;
+        clickedButtonX = Int32.Parse(buttonName.Substring(4, 1));
+        clickedButtonY = Int32.Parse(buttonName.Substring(5, 1));
+        clickedButtonArrowName = imageArray[clickedButtonX, clickedButtonY].sprite.name;
     }
 
     void ChangeButtonsPlaces(string clickedButtonNumber)

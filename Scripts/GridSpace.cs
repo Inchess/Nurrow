@@ -12,7 +12,7 @@ public class GridSpace : MonoBehaviour {
 
     public void UpdateGridSpace()
     {
-        gameController.MoveNumbersOnClick(buttonText, button);
+        gameController.MoveNumbersOnClick(button);
     }
 
     public void SetGameControllerReference(GameController controller)
