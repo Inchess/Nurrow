@@ -373,6 +373,7 @@ public class GameController : MonoBehaviour {
 
     void PrepareArrowsToUse()
     {
+        arrowsToUse.Clear();
         int numOfButtons = columns * rows - 2;
         int allArrowsOccurrence = numOfButtons / arrowsList.Count;
         int extraArrows = numOfButtons % arrowsList.Count;
@@ -523,32 +524,30 @@ public class GameController : MonoBehaviour {
         numberOfMovesValue.text = numberOfMovesLeft.ToString();
         if (numberOfMovesLeft <= 0)
         {
-            FinishGame();
+            EndOfGame();
         }
-        else if (columns == 2 && buttonTextArray[0, 1].text == "1" && buttonTextArray[1, 1].text == "2" && buttonTextArray[0, 0].text == "3")
+        else if (buttonTextArray[0, rows - 1].text == "1" && buttonTextArray[1, rows - 1].text == "2" && ((columns == 2 && buttonTextArray[0, 0].text == "3") || (columns > 2 && buttonTextArray[2, rows - 1].text == "3")))
         {
-            StopGame();
-        }
-
-        else if (columns > 2 && buttonTextArray[0, rows-1].text == "1" && buttonTextArray[1, rows - 1].text == "2" && buttonTextArray[2, rows - 1].text == "3")
-        {
-            StopGame();
-        }        
+            EndOfBoard();
+        }  
     }
 
-    void StopGame()
+    void EndOfBoard()
     {
-        AreButtonsInteractable(false);
-        ColorCorrectNumbersDisabledColor();
+        BlockBoard();
         UpdatePoints();
         CalculateNumberOfExtraMoves();
         pointsForRoundValue.text = pointsInThisRound.ToString();
         extraMovesForRoundValue.text = extraMovesForBigNumbers.ToString();
-        TimerActive(false);
         ElementsAtBoardEndVisible(true);
     }
 
-    void FinishGame()
+    void EndOfGame()
+    {
+        BlockBoard();
+    }
+
+    void BlockBoard()
     {
         AreButtonsInteractable(false);
         ColorCorrectNumbersDisabledColor();
@@ -618,8 +617,7 @@ public class GameController : MonoBehaviour {
 
     void UpdatePoints()
     {
-        pointsInThisRound = (int)Math.Pow(rows * columns, 2) / 2 + (int)Math.Round(targetTime, 0) * Math.Min(rows, columns);
-        pointsInThisRound += extraPointsForNumbers * Math.Min(rows, columns);
+        pointsInThisRound = (int)Math.Pow(rows * columns, 2) / 2 + (int)Math.Round(targetTime, 0) * Math.Min(rows, columns) + extraPointsForNumbers * Math.Min(rows, columns);
         totalPoints += pointsInThisRound;
         pointsValue.text = totalPoints.ToString();
     }
@@ -635,9 +633,6 @@ public class GameController : MonoBehaviour {
 
     void AfterEachBoard()
     {
-        arrowsToUse.Clear();
-        arrowsListCopy.Clear();
-        numbersToAddToButtons.Clear();
         numberOfMovesValue.text = numberOfMovesLeft.ToString();
         if (!trainingGame)
         {
