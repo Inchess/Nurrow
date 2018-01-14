@@ -25,7 +25,7 @@ public class GameController : MonoBehaviour {
     private Text[,] buttonTextArray;
     private Image[,] imageArray;
     //private List<int> numbers;
-    private List<int> numbersLeft;
+    private List<int> numbersToAddToButtons;
     private System.Random rand;
     private List<Sprite> arrowsList;
     private List<Sprite> arrowsListCopy;
@@ -195,7 +195,7 @@ public class GameController : MonoBehaviour {
         InstantiateArrowsCopy();
         SetTimer();
         PrepareArrowsToUse();
-        CopyNumbersToNumbersLeftList();
+        CopyNumbersToAddToButtons();
         AddNumbersToButtons();
         ColorCorrectNumbersOnButtons();
         AddArrowsToButtons();
@@ -257,9 +257,9 @@ public class GameController : MonoBehaviour {
         }
     }
 
-    void CopyNumbersToNumbersLeftList()
+    void CopyNumbersToAddToButtons()
     {
-        AddNumbersToList(numbersLeft);
+        AddNumbersToList(numbersToAddToButtons);
     }
 
     private void InstantiateObjects()
@@ -271,7 +271,7 @@ public class GameController : MonoBehaviour {
             arrowsUpDownLeftRight = new List<Sprite>(new Sprite[] { upArrow, leftArrow, rightArrow, downArrow });
             arrowsDiagonal = new List<Sprite>(new Sprite[] { upLeftArrow, upRightArrow, downLeftArrow, downRightArrow });
             arrowsToUse = new List<Sprite>();
-            numbersLeft = new List<int>();
+            numbersToAddToButtons = new List<int>();
             gridsList = new List<GameObject>();
         }
     }
@@ -295,7 +295,6 @@ public class GameController : MonoBehaviour {
     {
         buttonTextArray = new Text[columns, rows];
         imageArray = new Image[columns, rows];
-        AddNumbersToList(numbersLeft);
         numOfGamesOnCurrentLevel = 0;
         extraMovesForBigNumbers = 0;
         numberOfBlockedButtons = 0;
@@ -376,28 +375,18 @@ public class GameController : MonoBehaviour {
         int numOfButtons = columns * rows - 2;
         int allArrowsOccurrence = numOfButtons / arrowsList.Count;
         int extraArrows = numOfButtons % arrowsList.Count;
+        arrowsToUse.Add(arrowsUpDownLeftRight[rand.Next(0, arrowsUpDownLeftRight.Count)]);
+        arrowsToUse.Add(arrowsDiagonal[rand.Next(0, arrowsDiagonal.Count)]);
         for (int i = 0; i < allArrowsOccurrence; i++)
         {
             arrowsToUse.AddRange(arrowsList);
         }
         for (int i = 0; i < extraArrows; i++)
         {
-            if (columns == 2 && i == 2)
-            {
-                int randomNum = rand.Next(0, arrowsUpDownLeftRight.Count);
-                arrowsToUse.Add(arrowsUpDownLeftRight[randomNum]);
-            }
-            else if (columns == 2 && i == 3)
-            {
-                int randomNum = rand.Next(0, arrowsDiagonal.Count);
-                arrowsToUse.Add(arrowsDiagonal[randomNum]);
-            }
-            else
-            {
-                int randomNumber = rand.Next(0, arrowsListCopy.Count);
-                arrowsToUse.Add(arrowsListCopy[randomNumber]);
-                arrowsListCopy.RemoveAt(randomNumber);
-            }
+            int randomNumber = rand.Next(0, arrowsListCopy.Count);
+            arrowsToUse.Add(arrowsListCopy[randomNumber]);
+            arrowsListCopy.RemoveAt(randomNumber);
+            
         }
     }
 
@@ -458,10 +447,10 @@ public class GameController : MonoBehaviour {
                 int randomNumber = 0;
                 do
                 {
-                    randomNumber = rand.Next(0, numbersLeft.Count);
+                    randomNumber = rand.Next(0, numbersToAddToButtons.Count);
                 } while (y == (rows - 1) && randomNumber < columns);
-                buttonTextArray[x, y].text = numbersLeft[randomNumber].ToString();
-                numbersLeft.RemoveAt(randomNumber);
+                buttonTextArray[x, y].text = numbersToAddToButtons[randomNumber].ToString();
+                numbersToAddToButtons.RemoveAt(randomNumber);
             }
         }
     }
@@ -643,7 +632,7 @@ public class GameController : MonoBehaviour {
     {
         arrowsToUse.Clear();
         arrowsListCopy.Clear();
-        numbersLeft.Clear();
+        numbersToAddToButtons.Clear();
         numberOfMovesValue.text = numberOfMovesLeft.ToString();
         if (!trainingGame)
         {
